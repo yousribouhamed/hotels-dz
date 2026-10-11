@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Local tool settings
+.claude/
+
+# iOS (Xcode)
+ios/build/
+ios/DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+# iCloud conflict copy of the project file
+ios/BoumerdesStays 2.xcodeproj/
+
+# Android app ignores live in android/.gitignore and android/android/.gitignore
+*.apk
+*.aab

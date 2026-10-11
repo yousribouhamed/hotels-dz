@@ -1,0 +1,480 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		08498C2BFB351972ED6BDA3B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B62383EEB30DA38F743E32E3 /* Localizable.strings */; };
+		100A8F68CC70BCFD5ACC61E1 /* HotelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EBBA610C00F1529D493025 /* HotelStore.swift */; };
+		4559B157460718D2E23E9C87 /* hotels.json in Resources */ = {isa = PBXBuildFile; fileRef = EE5FDD8A3B4FB728A26F6E33 /* hotels.json */; };
+		4753975099DD08D0D5428782 /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A474F5D17CB7BA77A13513D1 /* Filters.swift */; };
+		4E42347EC3091C5394F1374C /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B560BB95C0AF1EF7D992AB9 /* MapScreen.swift */; };
+		510E6F0BF6EE06EE76C3A888 /* thmanyahsans-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 561E7D741F432EE8755CC5C8 /* thmanyahsans-Medium.otf */; };
+		53CBDF2E2566E03A1CE3B726 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7914A2DED8F47CB4AD771C83 /* ExploreView.swift */; };
+		5460346B4952660FCFBBE8D5 /* Community.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC03DCE0D766231AB61F506 /* Community.swift */; };
+		6778154615FEE66DDBEE8A0C /* thmanyahsans-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8A6781E478CB4A1BF92026E1 /* thmanyahsans-Light.otf */; };
+		6E0AA97C0EF323DE34A732FB /* FilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4603B23AD37E15FE436F5BE1 /* FilterSheet.swift */; };
+		78E020D38172AB976C36625D /* Moderation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6A6C672EB4807B880A69F7 /* Moderation.swift */; };
+		8EDECE75EAF6BCD864CDBF15 /* thmanyahsans-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6E8A9AA22CDE697954DE76EF /* thmanyahsans-Black.otf */; };
+		900A454D63E0F00FD757F4D0 /* BoumerdesStaysApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813772C9F50D0F81EE197A30 /* BoumerdesStaysApp.swift */; };
+		9E4211C16494165B4DA2775C /* thmanyahsans-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 67C2C271592E859AF98CEDCD /* thmanyahsans-Regular.otf */; };
+		AF0E47E3926867F21BC4825E /* img in Resources */ = {isa = PBXBuildFile; fileRef = F37DD903FE9E48A99DA4EC62 /* img */; };
+		B07E852DC2D9C6C3B7AD5332 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 31E1F57B1606D8F9DAAB8DB3 /* Supabase */; };
+		C374F7AABDB0D9C97CDD8859 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3393650BBCF04DE5AC136EE6 /* Models.swift */; };
+		C582878A7999D5D24062F317 /* ImagePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C3EE86218E2F6883CB117 /* ImagePipeline.swift */; };
+		C6BB55E0C495C2D37746A33D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD2EB8D6D3A48AC54415E84 /* Settings.swift */; };
+		CDC032158E5C7847E88C5628 /* HotelDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3B522929B97C119965F99D /* HotelDetailView.swift */; };
+		D1676EED7EA3132A6C20B305 /* thmanyahsans-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5B8EA8E3A79699DC4A87648 /* thmanyahsans-Bold.otf */; };
+		DDCC2638F20AC0E93390C5F2 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EB41F9D986D5053F4BE3C8 /* Typography.swift */; };
+		E21948B77861AD2383A1FF22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E8EA04FD9E4A65F0BE6D81D /* Assets.xcassets */; };
+		EB1018A7EAA15AD3135ADBE3 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADD5607C988B91779956A82D /* Components.swift */; };
+		FA76E326FE97B8BEAF2C7246 /* ReviewViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED7624BB935B86A2C41CDBA /* ReviewViews.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		08ED8A02C37C8EBEC4811B1E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B560BB95C0AF1EF7D992AB9 /* MapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapScreen.swift; sourceTree = "<group>"; };
+		0E3B522929B97C119965F99D /* HotelDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotelDetailView.swift; sourceTree = "<group>"; };
+		1650E8BF679A51B9CAA78D33 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		21EB41F9D986D5053F4BE3C8 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		3393650BBCF04DE5AC136EE6 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		3AC03DCE0D766231AB61F506 /* Community.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Community.swift; sourceTree = "<group>"; };
+		40C705091573D8697C9BF6AB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4603B23AD37E15FE436F5BE1 /* FilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSheet.swift; sourceTree = "<group>"; };
+		555C3EE86218E2F6883CB117 /* ImagePipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePipeline.swift; sourceTree = "<group>"; };
+		561E7D741F432EE8755CC5C8 /* thmanyahsans-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Medium.otf"; sourceTree = "<group>"; };
+		5E8EA04FD9E4A65F0BE6D81D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		67C2C271592E859AF98CEDCD /* thmanyahsans-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Regular.otf"; sourceTree = "<group>"; };
+		6AEFF54364BF664920181F0D /* BoumerdesStays.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BoumerdesStays.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B6A6C672EB4807B880A69F7 /* Moderation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Moderation.swift; sourceTree = "<group>"; };
+		6E8A9AA22CDE697954DE76EF /* thmanyahsans-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Black.otf"; sourceTree = "<group>"; };
+		7914A2DED8F47CB4AD771C83 /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
+		813772C9F50D0F81EE197A30 /* BoumerdesStaysApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoumerdesStaysApp.swift; sourceTree = "<group>"; };
+		89EBBA610C00F1529D493025 /* HotelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotelStore.swift; sourceTree = "<group>"; };
+		8A6781E478CB4A1BF92026E1 /* thmanyahsans-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Light.otf"; sourceTree = "<group>"; };
+		8AD2EB8D6D3A48AC54415E84 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		8ED7624BB935B86A2C41CDBA /* ReviewViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViews.swift; sourceTree = "<group>"; };
+		A474F5D17CB7BA77A13513D1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
+		ADD5607C988B91779956A82D /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		E71BAF9E89703935FEA56194 /* BoumerdesStays.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoumerdesStays.entitlements; sourceTree = "<group>"; };
+		EE5FDD8A3B4FB728A26F6E33 /* hotels.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hotels.json; sourceTree = "<group>"; };
+		F37DD903FE9E48A99DA4EC62 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = BoumerdesStays/Resources/img; sourceTree = SOURCE_ROOT; };
+		F5B8EA8E3A79699DC4A87648 /* thmanyahsans-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Bold.otf"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D3B34F2BF2DD15CEB7106954 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B07E852DC2D9C6C3B7AD5332 /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0FED44EC29757B53B3A163AC /* BoumerdesStays */ = {
+			isa = PBXGroup;
+			children = (
+				5E8EA04FD9E4A65F0BE6D81D /* Assets.xcassets */,
+				E71BAF9E89703935FEA56194 /* BoumerdesStays.entitlements */,
+				813772C9F50D0F81EE197A30 /* BoumerdesStaysApp.swift */,
+				3AC03DCE0D766231AB61F506 /* Community.swift */,
+				ADD5607C988B91779956A82D /* Components.swift */,
+				7914A2DED8F47CB4AD771C83 /* ExploreView.swift */,
+				A474F5D17CB7BA77A13513D1 /* Filters.swift */,
+				4603B23AD37E15FE436F5BE1 /* FilterSheet.swift */,
+				0E3B522929B97C119965F99D /* HotelDetailView.swift */,
+				89EBBA610C00F1529D493025 /* HotelStore.swift */,
+				555C3EE86218E2F6883CB117 /* ImagePipeline.swift */,
+				0B560BB95C0AF1EF7D992AB9 /* MapScreen.swift */,
+				3393650BBCF04DE5AC136EE6 /* Models.swift */,
+				6B6A6C672EB4807B880A69F7 /* Moderation.swift */,
+				8ED7624BB935B86A2C41CDBA /* ReviewViews.swift */,
+				8AD2EB8D6D3A48AC54415E84 /* Settings.swift */,
+				21EB41F9D986D5053F4BE3C8 /* Typography.swift */,
+				61268427EB08A597C467986F /* Resources */,
+			);
+			path = BoumerdesStays;
+			sourceTree = "<group>";
+		};
+		61268427EB08A597C467986F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EE5FDD8A3B4FB728A26F6E33 /* hotels.json */,
+				92F7EB921F49B0B9CE9E2A51 /* Fonts */,
+				B62383EEB30DA38F743E32E3 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8C03BA03E7D74F0CD735A6EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6AEFF54364BF664920181F0D /* BoumerdesStays.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		92F7EB921F49B0B9CE9E2A51 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				6E8A9AA22CDE697954DE76EF /* thmanyahsans-Black.otf */,
+				F5B8EA8E3A79699DC4A87648 /* thmanyahsans-Bold.otf */,
+				8A6781E478CB4A1BF92026E1 /* thmanyahsans-Light.otf */,
+				561E7D741F432EE8755CC5C8 /* thmanyahsans-Medium.otf */,
+				67C2C271592E859AF98CEDCD /* thmanyahsans-Regular.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		FA6FEDDE0604521EBF8CBF0D = {
+			isa = PBXGroup;
+			children = (
+				F37DD903FE9E48A99DA4EC62 /* img */,
+				0FED44EC29757B53B3A163AC /* BoumerdesStays */,
+				8C03BA03E7D74F0CD735A6EB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C3A35D72904D04D7885F3552 /* BoumerdesStays */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7CCCFDE88A0A926AFAD92068 /* Build configuration list for PBXNativeTarget "BoumerdesStays" */;
+			buildPhases = (
+				0B039DCF8F155868BE9964AC /* Sources */,
+				50DA94B4BD7BE3093CF4D2E7 /* Resources */,
+				D3B34F2BF2DD15CEB7106954 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BoumerdesStays;
+			packageProductDependencies = (
+				31E1F57B1606D8F9DAAB8DB3 /* Supabase */,
+			);
+			productName = BoumerdesStays;
+			productReference = 6AEFF54364BF664920181F0D /* BoumerdesStays.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		41A033CC8E4533BD087F8558 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = AD25C4AFCC9355883E1219D8 /* Build configuration list for PBXProject "BoumerdesStays" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				ar,
+				en,
+				fr,
+			);
+			mainGroup = FA6FEDDE0604521EBF8CBF0D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C75B3DD9B9DD7DFE208C1998 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8C03BA03E7D74F0CD735A6EB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C3A35D72904D04D7885F3552 /* BoumerdesStays */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		50DA94B4BD7BE3093CF4D2E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E21948B77861AD2383A1FF22 /* Assets.xcassets in Resources */,
+				08498C2BFB351972ED6BDA3B /* Localizable.strings in Resources */,
+				4559B157460718D2E23E9C87 /* hotels.json in Resources */,
+				AF0E47E3926867F21BC4825E /* img in Resources */,
+				8EDECE75EAF6BCD864CDBF15 /* thmanyahsans-Black.otf in Resources */,
+				D1676EED7EA3132A6C20B305 /* thmanyahsans-Bold.otf in Resources */,
+				6778154615FEE66DDBEE8A0C /* thmanyahsans-Light.otf in Resources */,
+				510E6F0BF6EE06EE76C3A888 /* thmanyahsans-Medium.otf in Resources */,
+				9E4211C16494165B4DA2775C /* thmanyahsans-Regular.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0B039DCF8F155868BE9964AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				900A454D63E0F00FD757F4D0 /* BoumerdesStaysApp.swift in Sources */,
+				5460346B4952660FCFBBE8D5 /* Community.swift in Sources */,
+				EB1018A7EAA15AD3135ADBE3 /* Components.swift in Sources */,
+				53CBDF2E2566E03A1CE3B726 /* ExploreView.swift in Sources */,
+				6E0AA97C0EF323DE34A732FB /* FilterSheet.swift in Sources */,
+				4753975099DD08D0D5428782 /* Filters.swift in Sources */,
+				CDC032158E5C7847E88C5628 /* HotelDetailView.swift in Sources */,
+				100A8F68CC70BCFD5ACC61E1 /* HotelStore.swift in Sources */,
+				C582878A7999D5D24062F317 /* ImagePipeline.swift in Sources */,
+				4E42347EC3091C5394F1374C /* MapScreen.swift in Sources */,
+				C374F7AABDB0D9C97CDD8859 /* Models.swift in Sources */,
+				78E020D38172AB976C36625D /* Moderation.swift in Sources */,
+				FA76E326FE97B8BEAF2C7246 /* ReviewViews.swift in Sources */,
+				C6BB55E0C495C2D37746A33D /* Settings.swift in Sources */,
+				DDCC2638F20AC0E93390C5F2 /* Typography.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B62383EEB30DA38F743E32E3 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40C705091573D8697C9BF6AB /* ar */,
+				08ED8A02C37C8EBEC4811B1E /* en */,
+				1650E8BF679A51B9CAA78D33 /* fr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4678C46420773E76D2E55723 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = BoumerdesStays/BoumerdesStays.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Boumerdès Stays";
+				INFOPLIST_KEY_LSApplicationQueriesSchemes = tel;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.boumerdesstays.app;
+				PRODUCT_NAME = BoumerdesStays;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		6333FD20BDED82EC90A7B6A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		70EAAEA5221D970384BDD2C1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = BoumerdesStays/BoumerdesStays.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Boumerdès Stays";
+				INFOPLIST_KEY_LSApplicationQueriesSchemes = tel;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.boumerdesstays.app;
+				PRODUCT_NAME = BoumerdesStays;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		94D8FFFA195AAF5025BB95DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7CCCFDE88A0A926AFAD92068 /* Build configuration list for PBXNativeTarget "BoumerdesStays" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70EAAEA5221D970384BDD2C1 /* Debug */,
+				4678C46420773E76D2E55723 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AD25C4AFCC9355883E1219D8 /* Build configuration list for PBXProject "BoumerdesStays" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94D8FFFA195AAF5025BB95DB /* Debug */,
+				6333FD20BDED82EC90A7B6A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C75B3DD9B9DD7DFE208C1998 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		31E1F57B1606D8F9DAAB8DB3 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C75B3DD9B9DD7DFE208C1998 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 41A033CC8E4533BD087F8558 /* Project object */;
+}

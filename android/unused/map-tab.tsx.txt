@@ -1,0 +1,228 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Camera, CameraRef, GeoJSONSource, Images, Layer, Map } from '@maplibre/maplibre-react-native';
+import { L, LF, formatDecimal } from '../../lib/i18n';
+import { Hotel, hotelById, metaLine, weightedScore } from '../../lib/model';
+import { activeCount } from '../../lib/filters';
+import { useScopedAndResults, useStore } from '../../lib/store';
+import { useTheme } from '../../lib/theme';
+import { useMapStyle } from '../../lib/mapStyle';
+import { PhotoBox } from '../../components/photos';
+import { WilayaMenu } from '../../components/search';
+import { Icon, PriceLabel, RatingRow, T } from '../../components/ui';
+
+type Bounds = [number, number, number, number];
+
+function boundsOf(list: Hotel[]): Bounds | null {
+  if (!list.length) return null;
+  let w = 180, s = 90, e = -180, n = -90;
+  for (const h of list) {
+    w = Math.min(w, h.lng!); e = Math.max(e, h.lng!);
+    s = Math.min(s, h.lat!); n = Math.max(n, h.lat!);
+  }
+  // Keep a single stay from zooming in to street level.
+  if (e - w < 0.02) { w -= 0.01; e += 0.01; }
+  if (n - s < 0.02) { s -= 0.01; n += 0.01; }
+  return [w, s, e, n];
+}
+
+export default function MapScreen() {
+  const { c, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+  const camera = useRef<CameraRef>(null);
+  const filters = useStore((s) => s.filters);
+  const { results } = useScopedAndResults();
+  const [selectedID, setSelectedID] = useState<number | null>(null);
+  const mapStyle = useMapStyle(isDark);
+  const active = activeCount(filters);
+
+  /** The same stays as the Explore list: wilaya, search text and filters all apply. */
+  const pins = useMemo(() => results.filter((h) => h.lat != null && h.lng != null), [results]);
+  const bounds = useMemo(() => boundsOf(pins), [pins]);
+  const padding = { top: insets.top + 90, bottom: 190, left: 40, right: 40 };
+
+  const fitAll = () => {
+    if (bounds) camera.current?.fitBounds(bounds, { padding, duration: 400 });
+  };
+  useEffect(() => {
+    setSelectedID(null);
+    fitAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bounds?.join(',')]);
+
+  const data = useMemo<GeoJSON.FeatureCollection>(
+    () => ({
+      type: 'FeatureCollection',
+      features: pins.map((h) => ({
+        type: 'Feature',
+        id: h.id,
+        geometry: { type: 'Point', coordinates: [h.lng!, h.lat!] },
+        properties: {
+          id: h.id,
+          rated: h.rating != null,
+          label: h.rating != null ? formatDecimal(h.rating) : '',
+          good: (h.rating ?? 0) >= 4.5,
+          selected: h.id === selectedID,
+          // Lower is placed first: the selected pin, then the best-rated stays.
+          priority: h.id === selectedID ? -1000 : -weightedScore(h) * 100 - Math.min(h.reviews, 500) / 10,
+        },
+      })),
+    }),
+    [pins, selectedID],
+  );
+
+  const selected = selectedID != null ? hotelById.get(selectedID) : undefined;
+  const selectedImage = isDark ? 'pin-leaf' : 'pin-green';
+
+  return (
+    <View style={{ flex: 1, backgroundColor: c.canvas }}>
+      <Map
+        style={StyleSheet.absoluteFill}
+        mapStyle={mapStyle}
+        logo={false}
+        compass
+        touchPitch={false}
+        onPress={() => setSelectedID(null)}
+        onDidFinishLoadingMap={() => setTimeout(fitAll, 50)}
+      >
+        <Camera ref={camera} initialViewState={bounds ? { bounds, padding } : { center: [3.06, 36.75], zoom: 6 }} />
+        <Images
+          images={{
+            'pin-white': require('../../../assets/map/pin-white.png'),
+            'pin-green': require('../../../assets/map/pin-green.png'),
+            'pin-leaf': require('../../../assets/map/pin-leaf.png'),
+          }}
+        />
+        <GeoJSONSource
+          id="stays"
+          data={data}
+          hitbox={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          onPress={(e) => {
+            const f = e.nativeEvent.features?.[0];
+            if (f?.properties?.id != null) {
+              e.stopPropagation?.();
+              setSelectedID(Number(f.properties.id));
+            }
+          }}
+        >
+          {/* Stays without a rating appear once you zoom in, so the country view stays readable. */}
+          <Layer
+            type="circle"
+            id="unrated"
+            minzoom={9}
+            filter={['!', ['get', 'rated']]}
+            paint={{
+              'circle-radius': ['case', ['get', 'selected'], 8, 6.5],
+              'circle-color': ['case', ['get', 'selected'], c.accent, '#8E8E93'],
+              'circle-stroke-color': '#FFFFFF',
+              'circle-stroke-width': 2,
+            }}
+          />
+          {/* Overlapping pins hide at low zoom (best-rated win) and appear as you zoom in. */}
+          <Layer
+            type="symbol"
+            id="rated"
+            filter={['all', ['get', 'rated'], ['!', ['get', 'selected']]]}
+            layout={{
+              'icon-image': ['case', ['get', 'good'], 'pin-green', 'pin-white'],
+              'icon-allow-overlap': false,
+              'text-allow-overlap': false,
+              'text-field': ['get', 'label'],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': 12,
+              'symbol-sort-key': ['get', 'priority'],
+            }}
+            paint={{ 'text-color': ['case', ['get', 'good'], '#FFFFFF', '#000000'] }}
+          />
+          {/* The selected pin is always shown, larger, on top. */}
+          <Layer
+            type="symbol"
+            id="selected"
+            filter={['all', ['get', 'rated'], ['get', 'selected']]}
+            layout={{
+              'icon-image': selectedImage,
+              'icon-size': 1.25,
+              'icon-allow-overlap': true,
+              'text-allow-overlap': true,
+              'icon-ignore-placement': true,
+              'text-ignore-placement': true,
+              'text-field': ['get', 'label'],
+              'text-font': ['Noto Sans Bold'],
+              'text-size': 15,
+            }}
+            paint={{ 'text-color': '#FFFFFF' }}
+          />
+        </GeoJSONSource>
+      </Map>
+
+      {/* Top controls: wilaya, filters, count and "show all". */}
+      <View style={[styles.top, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
+        <View style={[styles.capsule, { backgroundColor: c.bar }]}>
+          <WilayaMenu onChange={() => setSelectedID(null)} />
+        </View>
+        <Pressable onPress={() => router.push('/filters')} style={[styles.capsule, styles.filterButton, { backgroundColor: c.bar }]}>
+          <Icon name="filter-variant" size={18} color={active > 0 ? c.accent : c.text} />
+          <T v="subheadline" w="semibold" color={active > 0 ? c.accent : c.text}>
+            {active > 0 ? LF('Filters · %d', active) : L('Filters')}
+          </T>
+        </Pressable>
+        <View style={[styles.count, { backgroundColor: c.bar }]}>
+          <T v="caption" w="semibold">{LF('%lld on map', pins.length)}</T>
+        </View>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={fitAll} style={[styles.round, { backgroundColor: c.bar }]} accessibilityLabel={L('Show all')}>
+          <Icon name="arrow-expand" size={18} color={c.accent} />
+        </Pressable>
+      </View>
+
+      <View style={[styles.bottom, { paddingBottom: 8 }]} pointerEvents="box-none">
+        {selected ? (
+          <MapPreviewCard hotel={selected} onClose={() => setSelectedID(null)} />
+        ) : (
+          <View style={[styles.hint, { backgroundColor: c.bar }]}>
+            <Icon name="gesture-tap" size={16} color={c.secondary} />
+            <T v="footnote" w="medium" secondary style={{ flexShrink: 1 }}>
+              {L('Tap a pin to preview a stay. Green pins are rated 4.5 or higher.')}
+            </T>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function MapPreviewCard({ hotel, onClose }: { hotel: Hotel; onClose: () => void }) {
+  const { c } = useTheme();
+  return (
+    <View>
+      <Pressable onPress={() => router.push(`/hotel/${hotel.id}`)} style={[styles.preview, { backgroundColor: c.bar }]}>
+        <PhotoBox path={hotel.photos[0]} kind={hotel.type} placeholderText="" size="thumb" style={styles.previewPhoto} />
+        <View style={{ flex: 1, gap: 4 }}>
+          <T v="headline" numberOfLines={1}>{hotel.name}</T>
+          <T v="caption" secondary numberOfLines={1}>{metaLine(hotel)}</T>
+          <RatingRow hotel={hotel} />
+          <PriceLabel hotel={hotel} />
+        </View>
+        <Icon name="chevron-right" size={20} color={c.tertiary} directional />
+      </Pressable>
+      <Pressable onPress={onClose} style={[styles.close, { backgroundColor: c.surface }]} accessibilityLabel={L('Close preview')}>
+        <Icon name="close" size={14} />
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  top: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12 },
+  capsule: { height: 40, borderRadius: 20, paddingHorizontal: 14, justifyContent: 'center', elevation: 2 },
+  filterButton: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  count: { height: 28, borderRadius: 14, paddingHorizontal: 10, justifyContent: 'center', elevation: 2 },
+  round: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', elevation: 2 },
+  bottom: { position: 'absolute', left: 16, right: 16, bottom: 0 },
+  hint: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 22, elevation: 2 },
+  preview: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, paddingEnd: 14, borderRadius: 20, elevation: 4 },
+  previewPhoto: { width: 96, height: 84, borderRadius: 12 },
+  close: { position: 'absolute', top: 6, end: 6, width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+});
