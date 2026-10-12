@@ -126,6 +126,9 @@
 "%lld stays, call them for a price" = "%lld hébergements, appelez pour le prix";
 "Minimum price" = "Prix minimum";
 "Maximum price" = "Prix maximum";
+"%d stays in your budget" = "%d hébergements dans votre budget";
+"1 stay in your budget" = "1 hébergement dans votre budget";
+"No stay in this range yet" = "Aucun hébergement dans cette fourchette";
 "Any" = "Tous";
 "any" = "max";
 "3.5+ Good" = "3,5+ Bien";

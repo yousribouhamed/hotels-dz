@@ -255,13 +255,18 @@ function Budget({ scope, draft, setDraft }: { scope: Hotel[]; draft: StayFilters
   const lower = Math.floor(lo / 1000) * 1000;
   const upper = Math.ceil(hi / 1000) * 1000;
   const selected: [number, number] = [draft.priceMin ?? lower, draft.priceMax ?? upper];
+  const inBudget = prices.filter((p) => p >= selected[0] && p <= selected[1]).length;
 
   return (
     <Section title="Budget per night" subtitle={LF('Only %d of %d stays list an online price. Most take bookings by phone.', priced, scope.length)}>
       {prices.length > 1 && hi > lo ? (
         <View style={{ gap: 10 }}>
-          <T v="headline">
-            {`${Money.format(selected[0])} – ${Money.format(selected[1])}${draft.priceMax == null ? '+' : ''}`}
+          <T v="subheadline" secondary>
+            {inBudget === 0
+              ? L('No stay in this range yet')
+              : inBudget === 1
+                ? L('1 stay in your budget')
+                : LF('%d stays in your budget', inBudget)}
           </T>
           <PriceHistogram prices={prices} lower={lower} upper={upper} selected={selected} />
           <RangeSlider
@@ -269,6 +274,13 @@ function Budget({ scope, draft, setDraft }: { scope: Hotel[]; draft: StayFilters
             bounds={[lower, upper]}
             step={500}
             onChange={([a, b]) => setDraft({ ...draft, priceMin: a <= lower ? null : a, priceMax: b >= upper ? null : b })}
+            label={(v, isUpper) => {
+              const text = Money.format(v);
+              // An open top end reads "24 000+ DZD".
+              if (!isUpper || v < upper) return text;
+              const gap = text.lastIndexOf('\u00A0');
+              return gap < 0 ? `${text}+` : `${text.slice(0, gap)}+${text.slice(gap)}`;
+            }}
           />
         </View>
       ) : (

@@ -107,10 +107,19 @@ struct FilterSheet: View {
                 let lower = lo / 1000 * 1000
                 let upper = (hi + 999) / 1000 * 1000
                 let selected = Double(draft.priceMin ?? lower)...Double(draft.priceMax ?? upper)
+                let inBudget = prices.filter { selected.contains(Double($0)) }.count
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("\(Money.format(Int(selected.lowerBound))) – \(Money.format(Int(selected.upperBound)))\(draft.priceMax == nil ? "+" : "")")
-                        .font(.app(.headline))
-                        .monospacedDigit()
+                    Group {
+                        switch inBudget {
+                        case 0: Text("No stay in this range yet")
+                        case 1: Text("1 stay in your budget")
+                        default: Text(LF("%d stays in your budget", inBudget))
+                        }
+                    }
+                    .font(.app(.subheadline))
+                    .foregroundStyle(.secondary)
+                    .contentTransition(.numericText(value: Double(inBudget)))
+                    .animation(.snappy, value: inBudget)
                     PriceHistogram(prices: prices, bounds: lower...upper, selected: selected)
                         .frame(height: 56)
                         .environment(\.layoutDirection, .leftToRight)
@@ -121,7 +130,13 @@ struct FilterSheet: View {
                             draft.priceMax = Int(r.upperBound) >= upper ? nil : Int(r.upperBound)
                         }),
                         bounds: Double(lower)...Double(upper),
-                        step: 500)
+                        step: 500,
+                        label: { value, isUpper in
+                            let text = Money.format(Int(value))
+                            // An open top end reads "24 000+ DZD".
+                            guard isUpper, Int(value) >= upper, let gap = text.lastIndex(of: "\u{00A0}") else { return text }
+                            return text.replacingCharacters(in: gap...gap, with: "+\u{00A0}")
+                        })
                     // Prices read low to high from left to right in every language.
                     .environment(\.layoutDirection, .leftToRight)
                 }
@@ -360,8 +375,16 @@ struct RangeSlider: View {
     @Binding var range: ClosedRange<Double>
     let bounds: ClosedRange<Double>
     var step: Double = 1
+    /// Text for the price tag under each knob (value, isUpper). Without it the slider has no tags.
+    var label: ((Double, Bool) -> String)? = nil
 
     private let thumb: CGFloat = 28
+    private let tagHeight: CGFloat = 30
+    /// Which knob is being dragged: 0 = low, 1 = high.
+    @State private var active: Int?
+    @State private var lowTagWidth: CGFloat = 0
+    @State private var highTagWidth: CGFloat = 0
+    @State private var mergedTagWidth: CGFloat = 0
 
     var body: some View {
         GeometryReader { geo in
@@ -370,39 +393,118 @@ struct RangeSlider: View {
             let lowX = CGFloat((range.lowerBound - bounds.lowerBound) / span) * width
             let highX = CGFloat((range.upperBound - bounds.lowerBound) / span) * width
 
-            ZStack(alignment: .leading) {
+            ZStack(alignment: .topLeading) {
                 Capsule().fill(Color.placeholder).frame(height: 4).padding(.horizontal, thumb / 2)
-                Capsule().fill(Color.accentColor).frame(width: max(0, highX - lowX), height: 4).offset(x: lowX + thumb / 2)
-                knob.offset(x: lowX)
-                    .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("range")).onChanged { g in
-                        let v = value(at: g.location.x - thumb / 2, width: width)
-                        range = min(v, range.upperBound - step)...range.upperBound
-                    })
+                    .offset(y: thumb / 2 - 2)
+                Capsule().fill(Color.accentColor).frame(width: max(0, highX - lowX), height: 4)
+                    .offset(x: lowX + thumb / 2, y: thumb / 2 - 2)
+                knob(isActive: active == 0).offset(x: lowX)
+                    .gesture(drag(0, width: width) { v in range = min(v, range.upperBound - step)...range.upperBound })
                     .accessibilityLabel("Minimum price")
-                knob.offset(x: highX)
-                    .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("range")).onChanged { g in
-                        let v = value(at: g.location.x - thumb / 2, width: width)
-                        range = range.lowerBound...max(v, range.lowerBound + step)
-                    })
+                    .accessibilityValue(label?(range.lowerBound, false) ?? "")
+                knob(isActive: active == 1).offset(x: highX)
+                    .gesture(drag(1, width: width) { v in range = range.lowerBound...max(v, range.lowerBound + step) })
                     .accessibilityLabel("Maximum price")
+                    .accessibilityValue(label?(range.upperBound, true) ?? "")
+                if let label {
+                    tags(label, lowCenter: lowX + thumb / 2, highCenter: highX + thumb / 2, width: geo.size.width)
+                        .offset(y: thumb + 8)
+                        .accessibilityHidden(true)
+                }
             }
             .coordinateSpace(name: "range")
         }
-        .frame(height: thumb)
+        .frame(height: label == nil ? thumb : thumb + 8 + tagHeight)
+        .sensoryFeedback(.selection, trigger: range)
     }
 
-    private var knob: some View {
+    /// Price tags that ride under the knobs. When they would touch, they merge into one "low – high" tag.
+    @ViewBuilder
+    private func tags(_ label: (Double, Bool) -> String, lowCenter: CGFloat, highCenter: CGFloat, width: CGFloat) -> some View {
+        let low = label(range.lowerBound, false)
+        let high = label(range.upperBound, true)
+        let merged = lowCenter + lowTagWidth / 2 + 6 > highCenter - highTagWidth / 2
+        // Keep a tag fully on screen near the ends of the track.
+        let clamp = { (x: CGFloat, w: CGFloat) in min(max(x, w / 2), width - w / 2) }
+        ZStack(alignment: .topLeading) {
+            PriceTag(text: low, isActive: active == 0, notchOffset: lowCenter - clamp(lowCenter, lowTagWidth))
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { lowTagWidth = $0 }
+                .position(x: clamp(lowCenter, lowTagWidth), y: tagHeight / 2)
+                .opacity(merged ? 0 : 1)
+            PriceTag(text: high, isActive: active == 1, notchOffset: highCenter - clamp(highCenter, highTagWidth))
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { highTagWidth = $0 }
+                .position(x: clamp(highCenter, highTagWidth), y: tagHeight / 2)
+                .opacity(merged ? 0 : 1)
+            PriceTag(text: "\(low) – \(high)", isActive: active != nil, notchOffset: nil)
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { mergedTagWidth = $0 }
+                .position(x: clamp((lowCenter + highCenter) / 2, mergedTagWidth), y: tagHeight / 2)
+                .opacity(merged ? 1 : 0)
+        }
+        .frame(width: width, height: tagHeight)
+        .animation(.snappy(duration: 0.2), value: merged)
+    }
+
+    private func drag(_ which: Int, width: CGFloat, update: @escaping (Double) -> Void) -> some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .named("range"))
+            .onChanged { g in
+                if active != which { withAnimation(.snappy(duration: 0.15)) { active = which } }
+                update(value(at: g.location.x - thumb / 2, width: width))
+            }
+            .onEnded { _ in withAnimation(.snappy(duration: 0.2)) { active = nil } }
+    }
+
+    private func knob(isActive: Bool) -> some View {
         Circle()
             .fill(.white)
             .frame(width: thumb, height: thumb)
             .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
-            .overlay(Circle().strokeBorder(Color.line, lineWidth: 0.5))
+            .overlay(Circle().strokeBorder(isActive ? Color.accentColor : Color.line, lineWidth: isActive ? 2 : 0.5))
+            .scaleEffect(isActive ? 1.12 : 1)
     }
 
     private func value(at x: CGFloat, width: CGFloat) -> Double {
         let ratio = min(max(0, Double(x / width)), 1)
         let raw = bounds.lowerBound + ratio * (bounds.upperBound - bounds.lowerBound)
         return min(max((raw / step).rounded() * step, bounds.lowerBound), bounds.upperBound)
+    }
+}
+
+/// A small price label with a notch pointing up at its knob; fills with the accent while that knob is dragged.
+private struct PriceTag: View {
+    let text: String
+    let isActive: Bool
+    /// Where the notch sits relative to the tag's centre, so it still points at a knob near the edge.
+    let notchOffset: CGFloat?
+
+    var body: some View {
+        Text(text)
+            .font(.app(.footnote, .semibold))
+            .monospacedDigit()
+            .lineLimit(1)
+            .fixedSize()
+            .foregroundStyle(isActive ? Color.onAccent : Color.primary)
+            .padding(.horizontal, 10)
+            .frame(height: 26)
+            .background(Capsule().fill(isActive ? Color.accentColor : Color.surface))
+            .overlay(Capsule().strokeBorder(isActive ? Color.clear : Color.line, lineWidth: 0.5))
+            .overlay(alignment: .top) {
+                if let notchOffset {
+                    Notch().fill(isActive ? Color.accentColor : Color.surface)
+                        .frame(width: 10, height: 5)
+                        .offset(x: notchOffset, y: -4)
+                }
+            }
+    }
+}
+
+private struct Notch: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { p in
+            p.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            p.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            p.closeSubpath()
+        }
     }
 }
 
