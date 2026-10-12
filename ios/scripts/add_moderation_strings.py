@@ -2,7 +2,7 @@
 # Safe to run again: existing keys are replaced, not duplicated.
 import re, os
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'BoumerdesStays', 'Resources')
-EMAIL = 'support@boumerdesstays.app'
+EMAIL = 'support@zalumo.app'
 
 T = {
 "Report review": ("Report review", "Signaler l’avis", "بلّغ على هاد الرأي"),
@@ -33,9 +33,9 @@ T = {
 # Privacy policy (Arabic is plain standard Arabic: it is a legal text, not UI copy)
 "privacy.summary.title": ("In short", "En bref", "باختصار"),
 "privacy.summary.body": (
-    "Boumerdès Stays doesn’t ask you to create an account and doesn’t collect, sell or share your personal data. There are no ads, no analytics and no tracking.",
-    "Boumerdès Stays ne vous demande pas de créer de compte et ne collecte, ne vend ni ne partage vos données personnelles. Pas de publicité, pas de statistiques d’usage, pas de pistage.",
-    "لا يطلب منك تطبيق Boumerdès Stays إنشاء حساب، ولا يجمع بياناتك الشخصية ولا يبيعها ولا يشاركها. لا توجد إعلانات ولا أدوات تحليل ولا تتبّع."),
+    "Zalumo doesn’t ask you to create an account and doesn’t collect, sell or share your personal data. There are no ads, no analytics and no tracking.",
+    "Zalumo ne vous demande pas de créer de compte et ne collecte, ne vend ni ne partage vos données personnelles. Pas de publicité, pas de statistiques d’usage, pas de pistage.",
+    "لا يطلب منك تطبيق Zalumo إنشاء حساب، ولا يجمع بياناتك الشخصية ولا يبيعها ولا يشاركها. لا توجد إعلانات ولا أدوات تحليل ولا تتبّع."),
 "privacy.device.title": ("What stays on your phone", "Ce qui reste sur votre téléphone", "ما يبقى على هاتفك"),
 "privacy.device.body": (
     "Your saved stays, search filters, language and appearance choices, and the reviews you reported or blocked are stored only on your device. Deleting the app deletes them.",

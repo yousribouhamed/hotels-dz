@@ -72,7 +72,7 @@ export default function SettingsScreen() {
         <Group title="Support & privacy">
           <SupportRow icon="shield-account" title="Privacy policy" onPress={() => router.push('/privacy')} />
           <Divider style={{ marginStart: 52 }} />
-          <SupportRow icon="email" title="Contact us" onPress={() => Linking.openURL(mailURL('Boumerdès Stays', ''))} />
+          <SupportRow icon="email" title="Contact us" onPress={() => Linking.openURL(mailURL('Zalumo', ''))} />
           {hiddenCount > 0 ? (
             <>
               <Divider style={{ marginStart: 52 }} />

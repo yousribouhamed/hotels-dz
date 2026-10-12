@@ -4,7 +4,7 @@ import { Hotel, Review } from './model';
 import { useStore } from './store';
 
 /** TODO: replace with the real support address before release (also in the privacy policy page). */
-export const SUPPORT_EMAIL = 'support@boumerdesstays.app';
+export const SUPPORT_EMAIL = 'support@zalumo.app';
 export const POLICY_UPDATED = '2026-10-11';
 
 /** Why someone reports a review (App Store / Play user-generated content rules). */

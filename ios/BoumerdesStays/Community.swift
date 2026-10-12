@@ -10,7 +10,7 @@ import Supabase
 enum BackendConfig {
     static let url = ""
     static let anonKey = ""
-    static let authRedirect = URL(string: "boumerdesstays://login-callback")!
+    static let authRedirect = URL(string: "zalumo://login-callback")!
 
     static var isConfigured: Bool { !url.isEmpty && !anonKey.isEmpty && URL(string: url) != nil }
 }

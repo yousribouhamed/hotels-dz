@@ -210,7 +210,7 @@ struct SettingsView: View {
                             .buttonStyle(.plain)
                             Divider().overlay(Color.line).padding(.leading, 52)
                             Button {
-                                if let url = AppInfo.mailURL(subject: "Boumerdès Stays", body: "") { openURL(url) }
+                                if let url = AppInfo.mailURL(subject: "Zalumo", body: "") { openURL(url) }
                             } label: {
                                 supportRow("Contact us", icon: "envelope.fill")
                             }

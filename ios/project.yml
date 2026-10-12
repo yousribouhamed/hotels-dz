@@ -1,6 +1,6 @@
 name: BoumerdesStays
 options:
-  bundleIdPrefix: com.boumerdesstays
+  bundleIdPrefix: com.zalumo
   developmentLanguage: en
   deploymentTarget:
     iOS: "17.0"
@@ -33,10 +33,10 @@ targets:
         com.apple.developer.applesignin: [Default]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.boumerdesstays.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.zalumo.app
         PRODUCT_NAME: BoumerdesStays
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: "Boumerdès Stays"
+        INFOPLIST_KEY_CFBundleDisplayName: "Zalumo"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait

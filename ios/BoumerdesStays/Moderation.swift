@@ -3,7 +3,7 @@ import SwiftUI
 /// Contact details shown in the app and used for reports.
 enum AppInfo {
     /// TODO: replace with the real support address before release (also update the privacy policy page).
-    static let supportEmail = "support@boumerdesstays.app"
+    static let supportEmail = "support@zalumo.app"
     static let policyUpdated = "2026-10-11"
 
     static func mailURL(subject: String, body: String) -> URL? {

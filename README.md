@@ -1,4 +1,4 @@
-# Boumerdès Stays
+# Zalumo
 
 Browse hotels, hostels and guest houses across Algeria's wilayas, in English, French and
 Arabic (Algerian Darja, right-to-left). Prices are shown in dinars at the parallel rate.

@@ -249,7 +249,7 @@
 "%d hidden" = "%d masqués";
 "Last updated %@" = "Dernière mise à jour : %@";
 "privacy.summary.title" = "En bref";
-"privacy.summary.body" = "Vous pouvez utiliser Boumerdès Stays sans compte ; il n’en faut un que pour publier des avis. Nous ne vendons ni ne partageons vos données personnelles. Pas de publicité, pas de statistiques d’usage, pas de pistage.";
+"privacy.summary.body" = "Vous pouvez utiliser Zalumo sans compte ; il n’en faut un que pour publier des avis. Nous ne vendons ni ne partageons vos données personnelles. Pas de publicité, pas de statistiques d’usage, pas de pistage.";
 "privacy.device.title" = "Ce qui reste sur votre téléphone";
 "privacy.device.body" = "Vos hébergements favoris, vos filtres, vos choix de langue et d’apparence, ainsi que les avis signalés ou bloqués, sont stockés uniquement sur votre appareil. Supprimer l’application les supprime.";
 "privacy.content.title" = "Photos et cartes";
