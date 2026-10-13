@@ -42,7 +42,7 @@ struct HotelDetailView: View {
                         if !hotel.rateRows.isEmpty { section("Prices") { prices } }
                         if !hotel.desc.isEmpty { section("About this place") { about } }
                         if hotel.am.contains(where: \.y) { section("What this place offers") { amenities } }
-                        if hotel.rating != nil || community.isAvailable {
+                        if hotel.rating != nil || hotel.siteRating != nil || community.isAvailable {
                             // Invisible anchor a bit above the section so the jump clears the top bar.
                             Color.clear.frame(height: 0).padding(.top, -110).id("reviews")
                             section("Reviews") { reviews }
@@ -387,8 +387,20 @@ struct HotelDetailView: View {
         let total = visible.count + guests.count + (mine == nil ? 0 : 1)
         return VStack(alignment: .leading, spacing: 18) {
             if hotel.rating == nil {
+                if let site = hotel.siteRating, let score = hotel.siteScoreText, let count = hotel.siteReviewsText {
+                    // Score from a booking site, out of 10 and labelled with its source.
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(score)
+                            .font(.appFixed(size: 36, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                        Text(count).font(.app(.subheadline))
+                        Text(LF("Checked %@", Fmt.day(site.checked) ?? site.checked)).font(.app(.caption)).foregroundStyle(.secondary)
+                    }
+                }
                 if guests.isEmpty && mine == nil {
-                    Text("No reviews yet").font(.app(.subheadline)).foregroundStyle(.secondary)
+                    if hotel.siteRating == nil {
+                        Text("No reviews yet").font(.app(.subheadline)).foregroundStyle(.secondary)
+                    }
                 } else {
                     guestSummary(guests + (mine.map { [$0] } ?? []))
                 }

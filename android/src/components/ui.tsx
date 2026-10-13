@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, I18nManager, Image, Pressable, StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isArabic, formatDecimal, L } from '../lib/i18n';
-import { Hotel, Money, lowestDZD, ratingLabel, reviewCountText } from '../lib/model';
+import { Hotel, Money, lowestDZD, ratingLabel, reviewCountText, siteRating, siteReviewsText, siteScoreText } from '../lib/model';
 import { useIsSaved, useStore } from '../lib/store';
 import { useTheme } from '../lib/theme';
 
@@ -106,7 +106,19 @@ export function ratingColor(rating: number | null | undefined, c: { good: string
 
 export function RatingRow({ hotel }: { hotel: Hotel }) {
   const { c } = useTheme();
-  if (hotel.rating == null) return <T v="subheadline" secondary>{L('No reviews yet')}</T>;
+  if (hotel.rating == null) {
+    const score = siteScoreText(hotel);
+    // Booking-site score: shown out of 10 with its site, never mixed with Google stars.
+    if (score == null) return <T v="subheadline" secondary>{L('No reviews yet')}</T>;
+    return (
+      <View style={styles.row8}>
+        <View style={[styles.ratingBox, { backgroundColor: c.surface }]}>
+          <T v="subheadline" w="bold">{score}</T>
+        </View>
+        <T v="subheadline" secondary numberOfLines={1}>{siteReviewsText(hotel)}</T>
+      </View>
+    );
+  }
   const tint = ratingColor(hotel.rating, c);
   return (
     <View style={styles.row8}>
@@ -134,16 +146,29 @@ export function PriceLabel({ hotel, large }: { hotel: Hotel; large?: boolean }) 
 /** "★ 4.6 (299)" next to the name. */
 export function CompactRating({ hotel }: { hotel: Hotel }) {
   const { c } = useTheme();
+  const site = siteRating(hotel);
   return (
-    <View style={styles.row3} accessibilityLabel={hotel.rating != null ? ratingLabel(hotel) : L('No reviews yet')}>
-      <Icon name="star" size={13} color={c.star} />
+    <View
+      style={styles.row3}
+      accessibilityLabel={hotel.rating != null ? ratingLabel(hotel) : site ? `${siteScoreText(hotel)}, ${siteReviewsText(hotel)}` : L('No reviews yet')}
+    >
       {hotel.rating != null ? (
         <>
+          <Icon name="star" size={13} color={c.star} />
           <T v="subheadline" w="semibold">{formatDecimal(hotel.rating)}</T>
           <T v="subheadline" secondary>({hotel.reviews})</T>
         </>
+      ) : site ? (
+        // Out of 10 on a booking site: no star icon, so it never reads as a Google rating.
+        <>
+          <T v="subheadline" w="semibold">{siteScoreText(hotel)}</T>
+          <T v="subheadline" secondary>({site.count})</T>
+        </>
       ) : (
-        <T v="subheadline" w="semibold">{L('New')}</T>
+        <>
+          <Icon name="star" size={13} color={c.star} />
+          <T v="subheadline" w="semibold">{L('New')}</T>
+        </>
       )}
     </View>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { L, LF, formatDecimal, formatDistance } from '../lib/i18n';
-import { Hotel, Money, lowestDZD, regionName, starsText, telURL } from '../lib/model';
+import { Hotel, Money, lowestDZD, regionName, siteScoreText, starsText, telURL } from '../lib/model';
 import { amenityKeys, amenityTitle, traits } from '../lib/filters';
 import { useTheme } from '../lib/theme';
 import { CardPhotoCarousel, PhotoBox } from './photos';
@@ -108,6 +108,11 @@ export function CompactStayCard({ hotel }: { hotel: Hotel }) {
                 <T v="footnote" secondary>·</T>
                 <Icon name="star" size={11} color={c.star} />
                 <T v="footnote" secondary>{formatDecimal(hotel.rating)}</T>
+              </>
+            ) : siteScoreText(hotel) ? (
+              <>
+                <T v="footnote" secondary>·</T>
+                <T v="footnote" secondary>{siteScoreText(hotel)}</T>
               </>
             ) : null}
           </View>

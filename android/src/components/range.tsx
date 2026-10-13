@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { LayoutChangeEvent, PanResponder, StyleSheet, View } from 'react-native';
 import { useTheme } from '../lib/theme';
+import { T } from './ui';
 
 /** Bars of how many stays fall in each 1 000 DZD band; selected bands are highlighted. */
 export function PriceHistogram({ prices, lower, upper, selected, binWidth = 1000 }: {
@@ -36,13 +37,21 @@ export function PriceHistogram({ prices, lower, upper, selected, binWidth = 1000
 }
 
 const THUMB = 28;
+const TAG_GAP = 8;
+const TAG_HEIGHT = 32;
 
-/** Two-thumb range slider (same behaviour as the iOS one), always left-to-right. */
-export function RangeSlider({ range, bounds, step = 1, onChange }: {
+/**
+ * Two-thumb range slider (same behaviour as the iOS one), always left-to-right.
+ * With `label`, a price tag rides under each knob; when the two would touch they merge into one "low – high" tag.
+ */
+export function RangeSlider({ range, bounds, step = 1, onChange, label }: {
   range: [number, number]; bounds: [number, number]; step?: number; onChange: (r: [number, number]) => void;
+  label?: (value: number, isUpper: boolean) => string;
 }) {
   const { c } = useTheme();
   const [width, setWidth] = useState(0);
+  const [active, setActive] = useState<0 | 1 | null>(null);
+  const [tagW, setTagW] = useState({ low: 0, high: 0, merged: 0 });
   const state = useRef({ range, width, start: 0 });
   state.current.range = range;
   state.current.width = width;
@@ -67,23 +76,84 @@ export function RangeSlider({ range, bounds, step = 1, onChange }: {
         const [lo, hi] = state.current.range;
         const w = Math.max(1, state.current.width - THUMB);
         state.current.start = (((which === 0 ? lo : hi) - bounds[0]) / span) * w;
+        setActive(which);
       },
       onPanResponderMove: (_e, g) => {
         const v = valueAt(state.current.start + g.dx);
         const [lo, hi] = state.current.range;
         onChange(which === 0 ? [Math.min(v, hi - step), hi] : [lo, Math.max(v, lo + step)]);
       },
+      onPanResponderRelease: () => setActive(null),
+      onPanResponderTerminate: () => setActive(null),
     });
 
   const low = useRef(makeResponder(0)).current;
   const high = useRef(makeResponder(1)).current;
 
+  // Price tags: centred under their knob, kept on screen near the ends, merged when they would touch.
+  const lowCenter = lowX + THUMB / 2;
+  const highCenter = highX + THUMB / 2;
+  const merged = lowCenter + tagW.low / 2 + 6 > highCenter - tagW.high / 2;
+  const clamp = (x: number, w: number) => Math.min(Math.max(x, w / 2), width - w / 2);
+  const measure = (key: 'low' | 'high' | 'merged') => (e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    setTagW((t) => (Math.abs(t[key] - w) < 0.5 ? t : { ...t, [key]: w }));
+  };
+  const lowText = label?.(range[0], false) ?? '';
+  const highText = label?.(range[1], true) ?? '';
+
+  const knob = (which: 0 | 1, x: number) => (
+    <View
+      {...(which === 0 ? low : high).panHandlers}
+      style={[
+        styles.knob,
+        { left: x, borderColor: active === which ? c.accent : c.line },
+        active === which && { borderWidth: 2, transform: [{ scale: 1.12 }] },
+      ]}
+      accessibilityLabel={which === 0 ? 'Minimum price' : 'Maximum price'}
+      accessibilityValue={label ? { text: which === 0 ? lowText : highText } : undefined}
+    />
+  );
+
   return (
-    <View style={{ height: THUMB, direction: 'ltr' }} onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
+    <View
+      style={{ height: label ? THUMB + TAG_GAP + TAG_HEIGHT : THUMB, direction: 'ltr' }}
+      onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
+    >
       <View style={[styles.track, { backgroundColor: c.placeholder, left: THUMB / 2, right: THUMB / 2 }]} />
       <View style={[styles.track, { backgroundColor: c.accent, left: lowX + THUMB / 2, width: Math.max(0, highX - lowX) }]} />
-      <View {...low.panHandlers} style={[styles.knob, { left: lowX, borderColor: c.line }]} accessibilityLabel="Minimum price" />
-      <View {...high.panHandlers} style={[styles.knob, { left: highX, borderColor: c.line }]} accessibilityLabel="Maximum price" />
+      {knob(0, lowX)}
+      {knob(1, highX)}
+      {label && width > 0 ? (
+        <View style={styles.tags} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PriceTag text={lowText} active={active === 0} hidden={merged} onLayout={measure('low')}
+            left={clamp(lowCenter, tagW.low) - tagW.low / 2} notch={lowCenter - clamp(lowCenter, tagW.low)} />
+          <PriceTag text={highText} active={active === 1} hidden={merged} onLayout={measure('high')}
+            left={clamp(highCenter, tagW.high) - tagW.high / 2} notch={highCenter - clamp(highCenter, tagW.high)} />
+          <PriceTag text={`${lowText} – ${highText}`} active={active !== null} hidden={!merged} onLayout={measure('merged')}
+            left={clamp((lowCenter + highCenter) / 2, tagW.merged) - tagW.merged / 2} />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/** A small price label with a notch pointing up at its knob; fills with the accent while that knob is dragged. */
+function PriceTag({ text, active, hidden, left, notch, onLayout }: {
+  text: string; active: boolean; hidden: boolean; left: number; notch?: number; onLayout: (e: LayoutChangeEvent) => void;
+}) {
+  const { c } = useTheme();
+  const fill = active ? c.accent : c.surface;
+  return (
+    <View onLayout={onLayout} style={[styles.tag, { left, opacity: hidden ? 0 : 1 }]}>
+      {notch != null ? (
+        <View style={[styles.notch, { borderBottomColor: fill, transform: [{ translateX: notch }] }]} />
+      ) : null}
+      <View style={[styles.tagBody, { backgroundColor: fill, borderColor: active ? fill : c.line }]}>
+        <T v="footnote" w="semibold" numberOfLines={1} color={active ? c.onAccent : c.text} style={styles.tagText}>
+          {text}
+        </T>
+      </View>
     </View>
   );
 }
@@ -96,4 +166,13 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth, elevation: 3,
     shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 3, shadowOffset: { width: 0, height: 1 },
   },
+  tags: { position: 'absolute', top: THUMB + TAG_GAP, left: 0, right: 0, height: TAG_HEIGHT },
+  tag: { position: 'absolute', top: 0, alignItems: 'center' },
+  notch: {
+    width: 0, height: 0, marginBottom: -1,
+    borderLeftWidth: 5, borderRightWidth: 5, borderBottomWidth: 5,
+    borderLeftColor: 'transparent', borderRightColor: 'transparent',
+  },
+  tagBody: { height: 26, paddingHorizontal: 10, borderRadius: 13, justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
+  tagText: { fontVariant: ['tabular-nums'] },
 });
