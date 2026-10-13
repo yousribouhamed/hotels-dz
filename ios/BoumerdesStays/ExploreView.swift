@@ -409,15 +409,23 @@ struct CompactRating: View {
 
     var body: some View {
         HStack(spacing: 3) {
-            Image(systemName: "star.fill")
-                .font(.app(.caption))
-                .foregroundStyle(Color.star)
             if let rating = hotel.rating {
+                Image(systemName: "star.fill")
+                    .font(.app(.caption))
+                    .foregroundStyle(Color.star)
                 Text(rating, format: .number.precision(.fractionLength(1)))
                     .fontWeight(.semibold)
                 Text("(\(hotel.reviews))")
                     .foregroundStyle(.secondary)
+            } else if let score = hotel.siteScoreText, let site = hotel.siteRating {
+                // Out of 10 on a booking site: no star icon, so it never reads as a Google rating.
+                Text(score).fontWeight(.semibold)
+                Text("(\(site.count))")
+                    .foregroundStyle(.secondary)
             } else {
+                Image(systemName: "star.fill")
+                    .font(.app(.caption))
+                    .foregroundStyle(Color.star)
                 Text("New").fontWeight(.semibold)
             }
         }
@@ -426,7 +434,9 @@ struct CompactRating: View {
         .lineLimit(1)
         .fixedSize()
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(hotel.rating.map { LF("Rated %@ from %d reviews", String(format: "%.1f", $0), hotel.reviews) } ?? L("No reviews yet"))
+        .accessibilityLabel(hotel.rating.map { LF("Rated %@ from %d reviews", String(format: "%.1f", $0), hotel.reviews) }
+            ?? hotel.siteScoreText.flatMap { score in hotel.siteReviewsText.map { "\(score), \($0)" } }
+            ?? L("No reviews yet"))
     }
 }
 
@@ -489,6 +499,9 @@ struct CompactStayCard: View {
                             Text("·")
                             Image(systemName: "star.fill").font(.app(.caption2)).foregroundStyle(Color.star)
                             Text(rating, format: .number.precision(.fractionLength(1)))
+                        } else if let score = hotel.siteScoreText {
+                            Text("·")
+                            Text(score)
                         }
                     }
                     .font(.app(.footnote))

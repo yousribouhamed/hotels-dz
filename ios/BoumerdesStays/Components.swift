@@ -211,6 +211,17 @@ struct RatingRow: View {
                 Text(hotel.reviewCountText)
                     .font(.app(.subheadline))
                     .foregroundStyle(.secondary)
+            } else if let score = hotel.siteScoreText, let count = hotel.siteReviewsText {
+                // Booking-site score: shown out of 10 with its site, never mixed with Google stars.
+                Text(score)
+                    .font(.app(.subheadline, .bold))
+                    .monospacedDigit()
+                    .padding(.horizontal, 7)
+                    .frame(height: 24)
+                    .background(Color.surface, in: RoundedRectangle(cornerRadius: 7))
+                Text(count)
+                    .font(.app(.subheadline))
+                    .foregroundStyle(.secondary)
             } else {
                 Text("No reviews yet")
                     .font(.app(.subheadline))

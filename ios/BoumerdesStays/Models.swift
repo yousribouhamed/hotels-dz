@@ -15,6 +15,16 @@ struct Hotel: Identifiable, Codable, Hashable {
         let t: String
         let d: String
     }
+    /// Price and guest score from one booking site (Wego, Booking.com), kept apart from the Google data.
+    /// Scores are out of 10, as the site shows them.
+    struct SiteListing: Codable, Hashable {
+        let site: String
+        let sid: Int?
+        let score: Double?
+        let count: Int
+        let dzd: Int?
+        let checked: String
+    }
     struct Distribution: Codable, Hashable {
         let oneStar: Int?
         let twoStar: Int?
@@ -49,6 +59,8 @@ struct Hotel: Identifiable, Codable, Hashable {
     let tags: [String]
     let closed: Bool
     let cin: String?
+    /// Listings on booking sites; only stays added from those sites have them.
+    let ota: [SiteListing]?
 }
 
 extension Hotel {
@@ -89,6 +101,22 @@ extension Hotel {
     }
 
     var reviewCountText: String { reviews == 1 ? L("1 review") : LF("%d reviews", reviews) }
+
+    /// The booking-site score with the most reviews, for stays without a Google rating.
+    var siteRating: SiteListing? {
+        guard rating == nil else { return nil }
+        return (ota ?? []).filter { $0.score != nil && $0.count > 0 }.max { $0.count < $1.count }
+    }
+
+    /// "8.1/10"
+    var siteScoreText: String? {
+        siteRating?.score.map { String(format: "%.1f", $0) + "/10" }
+    }
+
+    /// "295 reviews on Wego"
+    var siteReviewsText: String? {
+        siteRating.map { LF("%d reviews on %@", $0.count, $0.site) }
+    }
 
     var starsText: String? {
         guard let stars, stars > 0 else { return nil }

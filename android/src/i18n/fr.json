@@ -129,6 +129,8 @@
  "%d stays in your budget": "%d hébergements dans votre budget",
  "1 stay in your budget": "1 hébergement dans votre budget",
  "No stay in this range yet": "Aucun hébergement dans cette fourchette",
+ "%d reviews on %@": "%1$d avis sur %2$@",
+ "Checked %@": "Vérifié le %@",
  "Any": "Tous",
  "any": "max",
  "3.5+ Good": "3,5+ Bien",

@@ -10,7 +10,7 @@ import { Camera, Map, Marker } from '@maplibre/maplibre-react-native';
 import { L, LF, formatDay, formatDecimal, formatDistance } from '../../lib/i18n';
 import {
   Hotel, Money, Review, googleMapsURL, hotelById, isGuestFavourite, lowestDZD, mapsAppURL, ratingLabel, rateRows, regionName,
-  reviewCountText, starsText, telURL, websiteLabel, websiteURL,
+  reviewCountText, siteRating, siteReviewsText, siteScoreText, starsText, telURL, websiteLabel, websiteURL,
 } from '../../lib/model';
 import { traits } from '../../lib/filters';
 import { confirmBlock, reportReasons, reportReview, useVisibleReviews } from '../../lib/moderation';
@@ -175,7 +175,7 @@ function Detail({ hotel }: { hotel: Hotel }) {
             </Section>
           ) : null}
 
-          {hotel.rating != null || useCommunity.getState().available ? (
+          {hotel.rating != null || siteRating(hotel) != null || useCommunity.getState().available ? (
             <View onLayout={(e) => (reviewsY.current = e.nativeEvent.layout.y + GALLERY - 20)}>
               <Section title="Reviews">
                 <Reviews hotel={hotel} onNote={(note) => { setCopiedNote(note); setTimeout(() => setCopiedNote(null), 1600); }} />
@@ -497,9 +497,17 @@ function Reviews({ hotel, onNote }: { hotel: Hotel; onNote: (note: string) => vo
   );
   return (
     <View style={{ gap: 18 }}>
+      {hotel.rating == null && siteRating(hotel) ? (
+        // Score from a booking site, out of 10 and labelled with its source.
+        <View style={{ gap: 2 }}>
+          <T v="largeTitle" w="bold" size={36}>{siteScoreText(hotel)}</T>
+          <T v="subheadline">{siteReviewsText(hotel)}</T>
+          <T v="caption" secondary>{LF('Checked %@', formatDay(siteRating(hotel)!.checked) ?? siteRating(hotel)!.checked)}</T>
+        </View>
+      ) : null}
       {hotel.rating == null ? (
         guestList.length === 0 ? (
-          <T v="subheadline" secondary>{L('No reviews yet')}</T>
+          siteRating(hotel) ? null : <T v="subheadline" secondary>{L('No reviews yet')}</T>
         ) : (
           // Stays without collected reviews: the average of the guest reviews.
           <View style={[styles.row6, { alignItems: 'baseline', gap: 10 }]}>

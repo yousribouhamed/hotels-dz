@@ -1,5 +1,5 @@
 import raw from '../../assets/data/hotels.json';
-import { L, LF } from './i18n';
+import { L, LF, formatDecimal } from './i18n';
 
 export type Ad = { site?: string | null; dzd?: number | null };
 export type Amenity = { n: string; y: boolean };
@@ -39,7 +39,12 @@ export type Hotel = {
   tags: string[];
   closed: boolean;
   cin?: string | null;
+  /** Listings on booking sites; only stays added from those sites have them. */
+  ota?: SiteListing[] | null;
 };
+
+/** Price and guest score from one booking site (Wego, Booking.com), kept apart from the Google data. Scores are out of 10. */
+export type SiteListing = { site: string; sid?: number | null; score?: number | null; count: number; dzd?: number | null; checked: string };
 
 export const hotels: Hotel[] = raw as Hotel[];
 export const hotelById = new Map(hotels.map((h) => [h.id, h]));
@@ -76,6 +81,25 @@ export function ratingLabel(h: Hotel) {
 }
 
 export const reviewCountText = (h: Hotel) => (h.reviews === 1 ? L('1 review') : LF('%d reviews', h.reviews));
+
+/** The booking-site score with the most reviews, for stays without a Google rating. */
+export function siteRating(h: Hotel): SiteListing | null {
+  if (h.rating != null) return null;
+  const rated = (h.ota ?? []).filter((o) => o.score != null && o.count > 0);
+  return rated.length ? rated.reduce((a, b) => (b.count > a.count ? b : a)) : null;
+}
+
+/** "8.1/10" */
+export const siteScoreText = (h: Hotel) => {
+  const s = siteRating(h);
+  return s?.score != null ? `${formatDecimal(s.score)}/10` : null;
+};
+
+/** "295 reviews on Wego" */
+export const siteReviewsText = (h: Hotel) => {
+  const s = siteRating(h);
+  return s ? LF('%d reviews on %@', s.count, s.site) : null;
+};
 
 export const starsText = (h: Hotel) => (h.stars && h.stars > 0 ? '★'.repeat(h.stars) : null);
 
