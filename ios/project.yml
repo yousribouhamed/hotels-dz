@@ -21,7 +21,13 @@ targets:
         excludes:
           - "Resources/img"
           - "Resources/img/**"
+          - "Resources/reviews"
+          - "Resources/reviews/**"
       - path: BoumerdesStays/Resources/img
+        type: folder
+        buildPhase: resources
+      # One file per stay with all its collected reviews (Resources/reviews/<id>.json).
+      - path: BoumerdesStays/Resources/reviews
         type: folder
         buildPhase: resources
     dependencies:

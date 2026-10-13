@@ -69,8 +69,13 @@ struct ExploreView: View {
     private var header: some View {
         let active = store.filters.activeCount
         return HStack(alignment: .center) {
-            Text("Stays")
-                .font(.app(.largeTitle, .bold))
+            // Zalumo logo (symbol + wordmark): lime on dark, forest on light (lime would vanish on the cream canvas).
+            Image("Wordmark")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 35)
+                .foregroundStyle(Color("WordmarkColor"))
+                .accessibilityLabel(Text(verbatim: "Zalumo"))
                 .accessibilityAddTraits(.isHeader)
             Spacer()
             Button { showFilters = true } label: {

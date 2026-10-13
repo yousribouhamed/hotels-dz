@@ -34,7 +34,6 @@ struct HotelDetailView: View {
                         if hotel.rating != nil {
                             ratingStrip { withAnimation(.snappy) { proxy.scrollTo("reviews", anchor: .top) } }
                         }
-                        quickActions(traits)
                         if hotel.closed {
                             Label("This stay is marked as closed. Call before you travel.", systemImage: "exclamationmark.triangle.fill")
                                 .font(.app(.subheadline, .semibold))
@@ -53,9 +52,6 @@ struct HotelDetailView: View {
                             section("Contact") { contact }
                         }
                         nearby
-                        Text("Details, photos and reviews were last updated in October 2026.")
-                            .font(.app(.footnote))
-                            .foregroundStyle(.secondary)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
@@ -156,6 +152,14 @@ struct HotelDetailView: View {
     // MARK: Header
 
     private func header(_ traits: StayTraits) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            titleBlock(traits)
+            Spacer(minLength: 0)
+            directionsButton
+        }
+    }
+
+    private func titleBlock(_ traits: StayTraits) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Text(L(hotel.type))
@@ -168,12 +172,9 @@ struct HotelDetailView: View {
                 .font(.app(.title2, .bold))
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 4) {
-                Text(hotel.city == hotel.regionName ? L(hotel.city) : "\(hotel.city), \(L(hotel.regionName))")
-                if let km = traits.km, let label = traits.centreLabel {
-                    Text("· \(Fmt.distance(km)) from \(label)")
-                }
-            }
+            // One text so it wraps as a sentence next to the Directions button.
+            (Text(hotel.city == hotel.regionName ? L(hotel.city) : "\(hotel.city), \(L(hotel.regionName))")
+             + Text(traits.km.flatMap { km in traits.centreLabel.map { " " + LF("· %@ from %@", Fmt.distance(km), $0) } } ?? ""))
             .font(.app(.subheadline))
             .foregroundStyle(.secondary)
             .lineLimit(2)
@@ -241,45 +242,28 @@ struct HotelDetailView: View {
         .foregroundStyle(Color.star)
     }
 
-    /// Action cards that carry the real detail (distance, number, site, area) instead of a bare label,
-    /// in the spirit of Google Maps' action pills and Zesty/Tripsy's tiles. Directions leads, filled;
-    /// a two-column grid that only shows what this stay supports.
-    private func quickActions(_ traits: StayTraits) -> some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                if hotel.appleMapsURL != nil || hotel.googleMapsURL != nil {
-                    Menu {
-                        if let url = hotel.appleMapsURL { Button("Apple Maps", systemImage: "map") { openURL(url) } }
-                        if let url = hotel.googleMapsURL { Button("Google Maps", systemImage: "globe") { openURL(url) } }
-                    } label: {
-                        ActionTile(icon: "arrow.triangle.turn.up.right.diamond.fill", title: "Directions",
-                                   detail: traits.km.map { km in
-                                       traits.centreLabel.map { LF("%@ from %@", Fmt.distance(km), $0) } ?? Fmt.distance(km)
-                                   } ?? L(hotel.city),
-                                   isPrimary: true)
-                    }
-                    .buttonStyle(.plain)
+    /// Round Directions button at the top right of the title; opens Apple Maps or Google Maps.
+    /// (Calling is the "Call to book" button at the bottom, so there's no Call card here.)
+    @ViewBuilder private var directionsButton: some View {
+        if hotel.appleMapsURL != nil || hotel.googleMapsURL != nil {
+            Menu {
+                if let url = hotel.appleMapsURL { Button("Apple Maps", systemImage: "map") { openURL(url) } }
+                if let url = hotel.googleMapsURL { Button("Google Maps", systemImage: "globe") { openURL(url) } }
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.turn.up.right.diamond.fill")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color.onAccent)
+                        .frame(width: 52, height: 52)
+                        .background(Color.accentColor, in: Circle())
+                    Text("Directions")
+                        .font(.app(.caption2, .semibold))
+                        .foregroundStyle(.secondary)
                 }
-                if let tel = hotel.telURL {
-                    Button { openURL(tel) } label: {
-                        ActionTile(icon: "phone.fill", title: "Call", detail: hotel.phone, isPrimary: false)
-                    }
-                    .buttonStyle(.plain)
-                    .contextMenu {
-                        Button("Copy number", systemImage: "doc.on.doc") { copy(hotel.phone, note: "Number copied") }
-                    }
-                }
-                if let web = hotel.websiteURL {
-                    Button { openURL(web) } label: {
-                        ActionTile(icon: "safari.fill", title: "Website", detail: hotel.websiteLabel, isPrimary: false)
-                    }
-                    .buttonStyle(.plain)
-                }
-                if !hotel.address.isEmpty {
-                    Button { copy(hotel.address, note: "Address copied") } label: {
-                        ActionTile(icon: "doc.on.doc.fill", title: "Copy address", detail: hotel.address, isPrimary: false)
-                    }
-                    .buttonStyle(.plain)
-                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(L("Directions"))
         }
     }
 
@@ -295,28 +279,23 @@ struct HotelDetailView: View {
     }
 
     private var prices: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            VStack(spacing: 0) {
-                ForEach(Array(hotel.rateRows.enumerated()), id: \.offset) { i, row in
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(L(row.site)).lineLimit(1)
-                        if i == 0 {
-                            Text("Lowest")
-                                .font(.app(.caption2, .bold))
-                                .foregroundStyle(Color.good)
-                                .padding(.horizontal, 6).padding(.vertical, 2)
-                                .background(Color.brandSoft, in: Capsule())
-                        }
-                        Spacer()
-                        Text(Money.dzd(row.dzd)).fontWeight(.semibold).monospacedDigit()
+        VStack(spacing: 0) {
+            ForEach(Array(hotel.rateRows.enumerated()), id: \.offset) { i, row in
+                HStack(alignment: .firstTextBaseline) {
+                    Text(L(row.site)).lineLimit(1)
+                    if i == 0 {
+                        Text("Lowest")
+                            .font(.app(.caption2, .bold))
+                            .foregroundStyle(Color.good)
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(Color.brandSoft, in: Capsule())
                     }
-                    .padding(.vertical, 12)
-                    if i < hotel.rateRows.count - 1 { Divider().overlay(Color.line) }
+                    Spacer()
+                    Text(Money.dzd(row.dzd)).fontWeight(.semibold).monospacedDigit()
                 }
+                .padding(.vertical, 12)
+                if i < hotel.rateRows.count - 1 { Divider().overlay(Color.line) }
             }
-            Text("Per night from \(Fmt.day(hotel.cin) ?? L("a date in autumn 2026")), in dinars as listed online in October 2026. Rates change with dates, so check before booking.")
-                .font(.app(.footnote))
-                .foregroundStyle(.secondary)
         }
     }
 
@@ -327,26 +306,25 @@ struct HotelDetailView: View {
     private var amenities: some View {
         let available = hotel.am.filter(\.y)
         return VStack(alignment: .leading, spacing: 14) {
-            // Two-column tiles: icon on top, name below.
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                ForEach(available.prefix(6), id: \.self) { a in
+            // 3×3 tiles: icon on top, name below; the rest are under "Show all".
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                ForEach(available.prefix(9), id: \.self) { a in
                     VStack(alignment: .leading, spacing: 8) {
                         Image(systemName: Self.amenitySymbol(a.n))
                             .font(.app(.title3))
                             .foregroundStyle(Color.accentColor)
                             .frame(height: 24)
                         Text(L(a.n))
-                            .font(.app(.subheadline, .medium))
-                            .lineLimit(2)
+                            .font(.app(.footnote, .medium))
+                            .lineLimit(2, reservesSpace: true)   // every tile the same height
                             .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 56, alignment: .topLeading)
-                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(10)
                     .background(Color.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
             }
-            if hotel.am.count > 6 {
+            if hotel.am.count > 9 {
                 Button("Show all \(hotel.am.count) amenities") { showAllAmenities = true }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
@@ -769,40 +747,5 @@ private struct ExpandableText: View {
                 .foregroundStyle(.primary)
             }
         }
-    }
-}
-
-
-/// One card in the quick-action row: icon badge, action name, and the detail it acts on.
-private struct ActionTile: View {
-    let icon: String
-    let title: String
-    let detail: String
-    let isPrimary: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: icon)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(isPrimary ? Color.accentColor : Color.onAccent)
-                .frame(width: 32, height: 32)
-                .background(isPrimary ? Color.onAccent : Color.accentColor, in: Circle())
-            VStack(alignment: .leading, spacing: 2) {
-                Text(L(title))
-                    .font(.app(.subheadline, .bold))
-                    .foregroundStyle(isPrimary ? Color.onAccent : Color.primary)
-                Text(detail)
-                    .font(.app(.caption))
-                    .foregroundStyle(isPrimary ? Color.onAccent.opacity(0.8) : Color.secondary)
-                    .monospacedDigit()
-            }
-            .lineLimit(1)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(isPrimary ? Color.accentColor : Color.surface,
-                    in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .accessibilityElement(children: .combine)
     }
 }

@@ -2,6 +2,7 @@ import { Alert, Linking } from 'react-native';
 import { L } from './i18n';
 import { Hotel, Review } from './model';
 import { useStore } from './store';
+import { reviewFiles } from './reviewFiles';
 
 /** TODO: replace with the real support address before release (also in the privacy policy page). */
 export const SUPPORT_EMAIL = 'support@zalumo.app';
@@ -12,9 +13,22 @@ export const reportReasons = ['Spam or fake', 'Offensive or hateful', 'Shares pe
 
 export const reviewKey = (h: Hotel, r: Review) => `${h.id}|${r.d}|${r.t.slice(0, 80)}`;
 
+const allCache = new Map<number, Review[]>();
+
+/** Every collected review for a stay, newest first (assets/reviews/<id>.json); falls back to hotels.json. */
+export function allReviews(h: Hotel): Review[] {
+  let list = allCache.get(h.id);
+  if (!list) {
+    const file = reviewFiles[h.id]?.();
+    list = file && file.length ? file : h.revs;
+    allCache.set(h.id, list);
+  }
+  return list;
+}
+
 export function useVisibleReviews(h: Hotel) {
   const hidden = useStore((s) => s.hiddenReviews);
-  return h.revs.filter((r) => !hidden.includes(reviewKey(h, r)));
+  return allReviews(h).filter((r) => !hidden.includes(reviewKey(h, r)));
 }
 
 export function mailURL(subject: string, body: string) {

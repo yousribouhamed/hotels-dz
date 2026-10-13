@@ -43,7 +43,7 @@ final class ModerationStore {
     func isHidden(_ hotel: Hotel, _ r: Hotel.Review) -> Bool { hidden.contains(Self.key(hotel, r)) }
 
     func visibleReviews(_ hotel: Hotel) -> [Hotel.Review] {
-        hotel.revs.filter { !isHidden(hotel, $0) }
+        CollectedReviews.all(for: hotel).filter { !isHidden(hotel, $0) }
     }
 
     func hide(_ hotel: Hotel, _ r: Hotel.Review) {

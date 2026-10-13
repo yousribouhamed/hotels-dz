@@ -10,6 +10,7 @@ import { useTheme } from '../../lib/theme';
 import { HotelCard, WilayaRow } from '../../components/cards';
 import { SearchWithWilaya, SortMenu } from '../../components/search';
 import { Icon, SegmentedSwitch, T } from '../../components/ui';
+import { Wordmark } from '../../components/wordmark';
 
 type Row = { name: string; total: number; top: Hotel[] };
 
@@ -49,7 +50,9 @@ export default function ExploreScreen() {
 
   const header = (
     <View style={{ gap: 14 }}>
-      <T v="largeTitle" w="bold" style={{ paddingHorizontal: 16, marginTop: 4 }}>{L('Stays')}</T>
+      <View style={{ paddingHorizontal: 16, marginTop: 4 }}>
+        <Wordmark />
+      </View>
       <View style={{ paddingHorizontal: 16 }}>
         <SearchWithWilaya />
       </View>

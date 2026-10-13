@@ -15,7 +15,7 @@
       "package": "com.zalumo.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#2A7C13",
+        "backgroundColor": "#B7FD00",
         "backgroundImage": "./assets/android-icon-background.png",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

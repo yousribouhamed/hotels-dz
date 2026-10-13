@@ -77,8 +77,9 @@ function Detail({ hotel }: { hotel: Hotel }) {
         <Gallery hotel={hotel} />
 
         <View style={{ paddingHorizontal: 20, paddingTop: 20, gap: 24 }}>
-          {/* Header */}
-          <View style={{ gap: 6 }}>
+          {/* Header: title on the left, round Directions button at its top right. */}
+          <View style={styles.headerRow}>
+          <View style={{ gap: 6, flex: 1 }}>
             <View style={styles.row6}>
               <T v="subheadline" w="semibold" secondary>{L(hotel.type)}</T>
               {starsText(hotel) ? <T v="subheadline" w="semibold" color={c.star}>{starsText(hotel)}</T> : null}
@@ -89,29 +90,14 @@ function Detail({ hotel }: { hotel: Hotel }) {
                 (t.km != null && t.centreLabel ? ` ${LF('· %@ from %@', formatDistance(t.km), t.centreLabel)}` : '')}
             </T>
           </View>
+            {mapsApp || gmaps ? (
+              <QuickAction title="Directions" icon="directions" onPress={() => Linking.openURL((mapsApp ?? gmaps)!)} />
+            ) : null}
+          </View>
 
           {hotel.rating != null ? (
             <RatingStrip hotel={hotel} onPress={() => scroll.current?.scrollTo({ y: reviewsY.current, animated: true })} />
           ) : null}
-
-          {/* Round shortcut buttons: only the ones this stay supports. */}
-          <View style={styles.quickActions}>
-            {tel ? (
-              <MenuView
-                shouldOpenOnLongPress
-                actions={[{ id: 'copy', title: L('Copy number') }]}
-                onPressAction={() => copy(hotel.phone, 'Number copied')}
-                style={{ flex: 1 }}
-              >
-                <QuickAction title="Call" icon="phone" onPress={() => Linking.openURL(tel)} />
-              </MenuView>
-            ) : null}
-            {mapsApp || gmaps ? (
-              <QuickAction title="Directions" icon="directions" onPress={() => Linking.openURL((mapsApp ?? gmaps)!)} />
-            ) : null}
-            {web ? <QuickAction title="Website" icon="web" onPress={() => Linking.openURL(web)} /> : null}
-            {hotel.address ? <QuickAction title="Copy address" icon="content-copy" onPress={() => copy(hotel.address, 'Address copied')} /> : null}
-          </View>
 
           {hotel.closed ? (
             <View style={styles.row6}>
@@ -141,12 +127,6 @@ function Detail({ hotel }: { hotel: Hotel }) {
                   </View>
                 ))}
               </View>
-              <T v="footnote" secondary>
-                {LF(
-                  'Per night from %@, in dinars as listed online in October 2026. Rates change with dates, so check before booking.',
-                  formatDay(hotel.cin) ?? L('a date in autumn 2026'),
-                )}
-              </T>
             </Section>
           ) : null}
 
@@ -158,16 +138,16 @@ function Detail({ hotel }: { hotel: Hotel }) {
 
           {available.length > 0 ? (
             <Section title="What this place offers">
-              {/* Two-column tiles: icon on top, name below. */}
+              {/* 3×3 tiles: icon on top, name below; the rest are under "Show all". */}
               <View style={styles.amenityGrid}>
-                {available.slice(0, 6).map((a) => (
+                {available.slice(0, 9).map((a) => (
                   <View key={a.n} style={[styles.amenityTile, { backgroundColor: c.surface }]}>
                     <Icon name={amenityIcon(a.n)} size={22} color={c.accent} />
-                    <T v="subheadline" w="medium" numberOfLines={2}>{L(a.n)}</T>
+                    <T v="footnote" w="medium" numberOfLines={2}>{L(a.n)}</T>
                   </View>
                 ))}
               </View>
-              {hotel.am.length > 6 ? (
+              {hotel.am.length > 9 ? (
                 <Pressable onPress={() => setShowAllAmenities(true)} style={[styles.showAll, { backgroundColor: c.surface }]}>
                   <T w="semibold" color={c.accent}>{LF('Show all %lld amenities', hotel.am.length)}</T>
                 </Pressable>
@@ -212,8 +192,6 @@ function Detail({ hotel }: { hotel: Hotel }) {
           ) : null}
 
           <Nearby hotel={hotel} />
-
-          <T v="footnote" secondary>{L('Details, photos and reviews were last updated in October 2026.')}</T>
         </View>
       </Animated.ScrollView>
 
@@ -357,7 +335,7 @@ function RatingStrip({ hotel, onPress }: { hotel: Hotel; onPress: () => void }) 
   );
 }
 
-function Stars({ n, size }: { n: number; size: number }) {
+export function Stars({ n, size }: { n: number; size: number }) {
   const { c } = useTheme();
   return (
     <View style={{ flexDirection: 'row', gap: 1 }}>
@@ -372,10 +350,10 @@ function QuickAction({ title, icon, onPress }: { title: string; icon: IconName; 
   const { c } = useTheme();
   return (
     <Pressable onPress={onPress} style={styles.quickAction} accessibilityRole="button" accessibilityLabel={L(title)}>
-      <View style={[styles.quickCircle, { backgroundColor: c.brandSoft }]}>
-        <Icon name={icon} size={20} color={c.accent} />
+      <View style={[styles.quickCircle, { backgroundColor: c.accent }]}>
+        <Icon name={icon} size={22} color={c.onAccent} />
       </View>
-      <T v="caption" w="medium" numberOfLines={1}>{L(title)}</T>
+      <T v="caption2" w="semibold" secondary numberOfLines={1}>{L(title)}</T>
     </Pressable>
   );
 }
@@ -472,9 +450,11 @@ function Reviews({ hotel, onNote }: { hotel: Hotel; onNote: (note: string) => vo
   }, [hotel.id, signedIn]);
   const items: ReviewItem[] = [
     ...(mine ? [{ kind: 'mine' as const, r: mine }] : []),
-    ...guests.map((r) => ({ kind: 'guest' as const, r })),
-    ...visible.map((r) => ({ kind: 'collected' as const, r })),
+    ...guests.slice(0, 10).map((r) => ({ kind: 'guest' as const, r })),
+    ...visible.slice(0, 10).map((r) => ({ kind: 'collected' as const, r })),
   ];
+  // The carousel shows up to 10 of each kind; "Show all" opens every review.
+  const totalReviews = (mine ? 1 : 0) + guests.length + visible.length;
   // Opens the review form, or sign-in first when nobody is signed in.
   const writeReview = () => router.push(signedIn ? `/review/${hotel.id}` : `/signin?next=${hotel.id}`);
   const guestList = mine ? [mine, ...guests] : guests;
@@ -573,6 +553,11 @@ function Reviews({ hotel, onNote }: { hotel: Hotel; onNote: (note: string) => vo
           }}
         />
       ) : null}
+      {totalReviews > items.length ? (
+        <Pressable onPress={() => router.push(`/reviews/${hotel.id}`)} style={[styles.writeButton, { backgroundColor: c.surface }]}>
+          <T w="semibold" color={c.accent}>{LF('Show all %d reviews', totalReviews)}</T>
+        </Pressable>
+      ) : null}
       {available ? (
         <Pressable onPress={writeReview} style={[styles.writeButton, { backgroundColor: c.surface }]}>
           <Icon name={mine ? 'pencil' : 'square-edit-outline'} size={18} color={c.accent} />
@@ -586,7 +571,7 @@ function Reviews({ hotel, onNote }: { hotel: Hotel; onNote: (note: string) => vo
 }
 
 /** "⋯" on a review: Report (with a reason) or Block. */
-function ReviewMenu({ hotel, review, onNote }: { hotel: Hotel; review: Review; onNote: (note: string) => void }) {
+export function ReviewMenu({ hotel, review, onNote }: { hotel: Hotel; review: Review; onNote: (note: string) => void }) {
   const { c, isDark } = useTheme();
   return (
     <MenuView
@@ -718,13 +703,13 @@ const styles = StyleSheet.create({
   strip: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 6, borderWidth: 1, borderRadius: 16 },
   stripCell: { flex: 1, alignItems: 'center', gap: 2 },
   stripDivider: { width: StyleSheet.hairlineWidth, height: 34 },
-  quickActions: { flexDirection: 'row' },
-  quickAction: { flex: 1, alignItems: 'center', gap: 6 },
+  headerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  quickAction: { alignItems: 'center', gap: 4 },
   quickCircle: { width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' },
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
   lowest: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
-  amenityGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  amenityTile: { width: '48%', flexGrow: 1, minHeight: 80, borderRadius: 14, padding: 12, gap: 8 },
+  amenityGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  amenityTile: { width: '31.5%', minHeight: 92, borderRadius: 14, padding: 10, gap: 8 },
   showAll: { height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 24, marginTop: 4 },
   barTrack: { flex: 1, height: 4, borderRadius: 2, overflow: 'hidden' },
   tag: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14 },

@@ -61,6 +61,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="hotel/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="privacy" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="reviews/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="guidelines" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="login-callback" options={{ animation: 'none' }} />
         <Stack.Screen
