@@ -1,53 +1,53 @@
 import React, { useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { MenuView } from '@react-native-menu/menu';
 import { L, LF } from '../lib/i18n';
 import { StaySort, staySorts } from '../lib/model';
-import { sortedRegionNames, useStore } from '../lib/store';
+import { regions, sortedRegionNames, useStore } from '../lib/store';
 import { emptyFilters } from '../lib/filters';
 import { useTheme } from '../lib/theme';
+import { Menu } from './menu';
 import { ChipLabel, Icon, T, font } from './ui';
 
 const ALL = '__all__';
 
-/** Wilaya picker shown inside the search field and on the map (native drop-down menu). */
+/** Wilaya picker shown inside the search field and on the map. */
 export function WilayaMenu({ onChange }: { onChange?: () => void }) {
-  const { c, isDark } = useTheme();
+  const { c } = useTheme();
   const region = useStore((s) => s.region);
   const setRegion = useStore((s) => s.setRegion);
   const filters = useStore((s) => s.filters);
   const setFilters = useStore((s) => s.setFilters);
-
-  const actions = [
-    { id: ALL, title: L('All wilayas'), state: region == null ? ('on' as const) : ('off' as const) },
-    ...sortedRegionNames().map((name) => ({
-      id: name,
-      title: L(name),
-      state: region === name ? ('on' as const) : ('off' as const),
-    })),
-  ];
+  const count = (name: string) => regions.find((r) => r.name === name)?.count ?? 0;
+  const total = regions.reduce((sum, r) => sum + r.count, 0);
 
   return (
-    <MenuView
-      actions={actions}
-      themeVariant={isDark ? 'dark' : 'light'}
-      onPressAction={({ nativeEvent }) => {
-        setRegion(nativeEvent.event === ALL ? null : nativeEvent.event);
+    <Menu
+      title={L('Wilaya')}
+      items={[
+        { id: ALL, title: L('All wilayas'), detail: String(total), icon: 'map-outline', selected: region == null },
+        ...sortedRegionNames().map((name) => ({ id: name, title: L(name), detail: String(count(name)), selected: region === name })),
+      ]}
+      onSelect={(id) => {
+        setRegion(id === ALL ? null : id);
         setFilters({ ...filters, towns: [] });
         onChange?.();
       }}
     >
-      <View
-        style={styles.wilaya}
-        accessibilityRole="button"
-        accessibilityLabel={LF('Wilaya, %@', region ? L(region) : L('all wilayas'))}
-      >
-        <T v="subheadline" w="semibold" color={c.accent} numberOfLines={1}>
-          {region ? L(region) : L('All wilayas')}
-        </T>
-        <Icon name="chevron-down" size={14} color={c.accent} />
-      </View>
-    </MenuView>
+      {(open) => (
+        <Pressable
+          onPress={open}
+          hitSlop={6}
+          style={styles.wilaya}
+          accessibilityRole="button"
+          accessibilityLabel={LF('Wilaya, %@', region ? L(region) : L('all wilayas'))}
+        >
+          <T v="subheadline" w="semibold" color={c.accent} numberOfLines={1}>
+            {region ? L(region) : L('All wilayas')}
+          </T>
+          <Icon name="chevron-down" size={14} color={c.accent} />
+        </Pressable>
+      )}
+    </Menu>
   );
 }
 
@@ -91,18 +91,21 @@ export function SearchWithWilaya() {
 
 /** "↑↓ Best match ⌄" chip that opens the sort menu. */
 export function SortMenu() {
-  const { isDark } = useTheme();
   const sort = useStore((s) => s.sort);
   const setSort = useStore((s) => s.setSort);
   return (
-    <MenuView
+    <Menu
       title={L('Sort by')}
-      themeVariant={isDark ? 'dark' : 'light'}
-      actions={staySorts.map((s) => ({ id: s, title: L(s), state: s === sort ? ('on' as const) : ('off' as const) }))}
-      onPressAction={({ nativeEvent }) => setSort(nativeEvent.event as StaySort)}
+      width={240}
+      items={staySorts.map((s) => ({ id: s, title: L(s), selected: s === sort }))}
+      onSelect={(id) => setSort(id as StaySort)}
     >
-      <ChipLabel title={sort} icon="swap-vertical" showsChevron />
-    </MenuView>
+      {(open) => (
+        <Pressable onPress={open} accessibilityRole="button" accessibilityLabel={LF('%@, %@', L('Sort by'), L(sort))}>
+          <ChipLabel title={sort} icon="swap-vertical" showsChevron />
+        </Pressable>
+      )}
+    </Menu>
   );
 }
 

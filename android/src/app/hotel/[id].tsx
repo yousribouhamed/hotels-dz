@@ -5,7 +5,6 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
-import { MenuView } from '@react-native-menu/menu';
 import { Camera, Map, Marker } from '@maplibre/maplibre-react-native';
 import { L, LF, formatDay, formatDecimal, formatDistance } from '../../lib/i18n';
 import {
@@ -23,6 +22,7 @@ import { LongPressReview, cardLines } from '../../components/reviewPeek';
 import { GuestReview, useCommunity, useGuestReviews, useMyReview } from '../../lib/community';
 import { PhotoBox } from '../../components/photos';
 import { Divider, Flow, Icon, IconName, Laurels, PageDots, SectionTitle, T, stayTypeIcon } from '../../components/ui';
+import { Menu } from '../../components/menu';
 
 const GALLERY = 340;
 
@@ -97,14 +97,14 @@ function Detail({ hotel }: { hotel: Hotel }) {
           {/* Round shortcut buttons: only the ones this stay supports. */}
           <View style={styles.quickActions}>
             {tel ? (
-              <MenuView
-                shouldOpenOnLongPress
-                actions={[{ id: 'copy', title: L('Copy number') }]}
-                onPressAction={() => copy(hotel.phone, 'Number copied')}
+              <Menu
+                items={[{ id: 'copy', title: L('Copy number'), icon: 'content-copy' }]}
+                onSelect={() => copy(hotel.phone, 'Number copied')}
+                width={220}
                 style={{ flex: 1 }}
               >
-                <QuickAction title="Call" icon="phone" onPress={() => Linking.openURL(tel)} />
-              </MenuView>
+                {(open) => <QuickAction title="Call" icon="phone" onPress={() => Linking.openURL(tel)} onLongPress={open} />}
+              </Menu>
             ) : null}
             {mapsApp || gmaps ? (
               <QuickAction title="Directions" icon="directions" onPress={() => Linking.openURL((mapsApp ?? gmaps)!)} />
@@ -368,10 +368,10 @@ function Stars({ n, size }: { n: number; size: number }) {
   );
 }
 
-function QuickAction({ title, icon, onPress }: { title: string; icon: IconName; onPress: () => void }) {
+function QuickAction({ title, icon, onPress, onLongPress }: { title: string; icon: IconName; onPress: () => void; onLongPress?: () => void }) {
   const { c } = useTheme();
   return (
-    <Pressable onPress={onPress} style={styles.quickAction} accessibilityRole="button" accessibilityLabel={L(title)}>
+    <Pressable onPress={onPress} onLongPress={onLongPress} style={styles.quickAction} accessibilityRole="button" accessibilityLabel={L(title)}>
       <View style={[styles.quickCircle, { backgroundColor: c.brandSoft }]}>
         <Icon name={icon} size={20} color={c.accent} />
       </View>
@@ -595,20 +595,15 @@ function Reviews({ hotel, onNote }: { hotel: Hotel; onNote: (note: string) => vo
 
 /** "⋯" on a review: Report (with a reason) or Block. */
 function ReviewMenu({ hotel, review, onNote }: { hotel: Hotel; review: Review; onNote: (note: string) => void }) {
-  const { c, isDark } = useTheme();
+  const { c } = useTheme();
   return (
-    <MenuView
-      themeVariant={isDark ? 'dark' : 'light'}
-      actions={[
-        {
-          id: 'report',
-          title: L('Report review'),
-          subactions: reportReasons.map((r) => ({ id: `reason:${r}`, title: L(r) })),
-        },
-        { id: 'block', title: L('Block reviewer'), attributes: { destructive: true } },
+    <Menu
+      width={240}
+      items={[
+        { id: 'report', title: L('Report review'), icon: 'flag-outline', children: reportReasons.map((r) => ({ id: `reason:${r}`, title: L(r) })) },
+        { id: 'block', title: L('Block reviewer'), icon: 'account-cancel-outline', destructive: true },
       ]}
-      onPressAction={({ nativeEvent }) => {
-        const id = nativeEvent.event;
+      onSelect={(id) => {
         if (id.startsWith('reason:')) {
           reportReview(hotel, review, id.slice(7));
           onNote('Review reported');
@@ -617,10 +612,12 @@ function ReviewMenu({ hotel, review, onNote }: { hotel: Hotel; review: Review; o
         }
       }}
     >
-      <View style={{ width: 36, height: 28, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel={L('More options')}>
-        <Icon name="dots-horizontal" size={20} color={c.secondary} />
-      </View>
-    </MenuView>
+      {(open) => (
+        <Pressable onPress={open} hitSlop={6} style={{ width: 36, height: 28, alignItems: 'center', justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={L('More options')}>
+          <Icon name="dots-horizontal" size={20} color={c.secondary} />
+        </Pressable>
+      )}
+    </Menu>
   );
 }
 
@@ -660,8 +657,8 @@ function ContactRow({ icon, title, value, onPress, copy }: {
   icon: IconName; title: string; value: string; onPress: () => void; copy?: { title: string; run: () => void };
 }) {
   const { c } = useTheme();
-  const row = (
-    <Pressable onPress={onPress} style={styles.contactRow}>
+  const row = (open?: () => void) => (
+    <Pressable onPress={onPress} onLongPress={open} style={styles.contactRow}>
       <Icon name={icon} size={22} color={c.accent} style={{ width: 30 }} />
       <View style={{ flex: 1, gap: 2 }}>
         <T v="caption" secondary>{L(title)}</T>
@@ -670,11 +667,11 @@ function ContactRow({ icon, title, value, onPress, copy }: {
       <Icon name="chevron-right" size={18} color={c.tertiary} directional />
     </Pressable>
   );
-  if (!copy) return row;
+  if (!copy) return row();
   return (
-    <MenuView shouldOpenOnLongPress actions={[{ id: 'copy', title: copy.title }]} onPressAction={copy.run}>
-      {row}
-    </MenuView>
+    <Menu items={[{ id: 'copy', title: copy.title, icon: 'content-copy' }]} onSelect={copy.run} width={220}>
+      {(open) => row(open)}
+    </Menu>
   );
 }
 
