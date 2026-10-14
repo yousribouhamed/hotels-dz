@@ -9,6 +9,9 @@ import datetime as dt, glob, json, os, re, sys
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'BoumerdesStays', 'Resources')
 OUT = os.path.join(ROOT, 'reviews')
 UNITS = {'minute': 0, 'heure': 0, 'jour': 1, 'semaine': 7, 'mois': 30, 'an': 365}
+# Pairs of stays checked by hand where the same text was really posted on both Google pages (different review IDs
+# and dates, each read from its own page), so it is not a collection mix-up.
+SAME_TEXT_OK = {frozenset({11510, 11515})}   # Hôtel Madaure / Hôtel Nour Echames, Chéraga: 3 identical 5★ reviews
 
 
 def to_date(when, scraped):
@@ -40,12 +43,21 @@ def main():
             # Google shows a stray " …" after reviews that end in an emoji or symbol, even when nothing is cut.
             t = re.sub(r'(?<=[^\w\s])\s+…$', '', t)
             if len(t) >= 80:
-                if t in owner_of_text and owner_of_text[t] != sid:
+                if t in owner_of_text and owner_of_text[t] != sid and frozenset({owner_of_text[t], sid}) not in SAME_TEXT_OK:
                     problems.append(f"same text under {owner_of_text[t]} and {sid}: {t[:50]!r}")
                 owner_of_text[t] = sid
             out.append({'s': x['s'], 't': t[:3000], 'd': to_date(x.get('when', ''), scraped)})
         if out:
             files[sid] = out
+    # Also compare with the review files already in the app for stays this run does not touch.
+    for f in glob.glob(os.path.join(OUT, '*.json')):
+        sid = int(os.path.basename(f)[:-5])
+        if sid in files or sid not in hotels:
+            continue
+        for x in json.load(open(f)):
+            t = x['t']
+            if len(t) >= 80 and t in owner_of_text and owner_of_text[t] != sid and frozenset({owner_of_text[t], sid}) not in SAME_TEXT_OK:
+                problems.append(f"same text under {sid} (already in the app) and {owner_of_text[t]}: {t[:50]!r}")
     if problems:
         print('NOT WRITTEN — reviews appear under two stays:', *problems[:20], sep='\n  ')
         sys.exit(1)
