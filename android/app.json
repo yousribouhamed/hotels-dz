@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "Boumerdès Stays",
-    "slug": "boumerdes-stays",
+    "name": "Zalumo",
+    "slug": "zalumo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "boumerdesstays",
+    "scheme": "zalumo",
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.boumerdesstays.app",
       "supportsTablet": false
     },
     "android": {
-      "package": "com.boumerdesstays.app",
+      "package": "com.zalumo.app",
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#2A7C13",

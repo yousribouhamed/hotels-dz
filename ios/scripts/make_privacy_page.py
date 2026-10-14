@@ -27,7 +27,7 @@ page = f'''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boumerdès Stays · Privacy policy</title>
+<title>Zalumo · Privacy policy</title>
 <style>
 :root {{ --bg:#FFFBE5; --fg:#1d1d1b; --muted:#6b6b60; --accent:#2A7C13; --line:#E8D5AE; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg:#0E1509; --fg:#f2f2ea; --muted:#9aa393; --accent:#76C457; --line:#2F3F27; }} }}
@@ -41,7 +41,7 @@ h1 {{ font-size:28px; margin:0 0 4px; }} h2 {{ font-size:19px; margin:24px 0 4px
 </style>
 </head>
 <body><main>
-<p><strong>Boumerdès Stays</strong></p>
+<p><strong>Zalumo</strong></p>
 <nav><a href="#en">English</a><a href="#fr">Français</a><a href="#ar">العربية</a></nav>
 {"".join(blocks)}
 </main></body></html>

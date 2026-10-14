@@ -1,0 +1,49 @@
+# Builds the Android App Bundle (.aab) for Google Play on GitHub's machines.
+# The bundle is uploaded as a build artifact; it is signed with the upload key afterwards
+# (the key is never stored in this repository).
+name: Android release bundle
+
+on:
+  push:
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-release.yml'
+  workflow_dispatch:
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: android/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Generate the native Android project
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Build the release bundle
+        working-directory: android/android
+        run: ./gradlew :app:bundleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zalumo-release-aab
+          path: android/android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14

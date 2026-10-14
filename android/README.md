@@ -1,4 +1,4 @@
-# Boumerdès Stays — Android
+# Zalumo — Android
 
 React Native (Expo SDK 57) version of the iOS app in [`../ios`](../ios).
 
