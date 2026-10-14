@@ -1,6 +1,6 @@
 # Builds the Android App Bundle (.aab) for Google Play on GitHub's machines.
-# The bundle is uploaded as a build artifact; it is signed with the upload key afterwards
-# (the key is never stored in this repository).
+# With the three UPLOAD_* secrets set (Settings → Secrets and variables → Actions), the bundle
+# is signed with the Play upload key and ready to upload. The key itself never enters the repo.
 name: Android release bundle
 
 on:
@@ -17,33 +17,70 @@ jobs:
     defaults:
       run:
         working-directory: android
+        shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: android/package-lock.json
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
 
+      # On failure, the last lines of output are posted as an annotation so they show on the run page.
+      - name: Prepare log helper
+        run: |
+          cat > /tmp/logged.sh <<'SH'
+          title="$1"; shift
+          set -o pipefail
+          "$@" 2>&1 | tee /tmp/step.log
+          status=$?
+          if [ $status -ne 0 ]; then
+            msg=$(tail -n 40 /tmp/step.log | sed 's/%/%25/g; s/\r//g' | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=$title::$msg"
+          fi
+          exit $status
+          SH
+          chmod +x /tmp/logged.sh
+
       - name: Install packages
-        run: npm ci
+        run: /tmp/logged.sh "npm ci" npm ci --no-audit --no-fund
 
       - name: Generate the native Android project
-        run: npx expo prebuild --platform android --no-install --clean
+        run: /tmp/logged.sh "expo prebuild" npx expo prebuild --platform android --no-install --clean
 
       - name: Build the release bundle
         working-directory: android/android
-        run: ./gradlew :app:bundleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+        run: /tmp/logged.sh "gradle bundleRelease" ./gradlew :app:bundleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+
+      - name: Sign with the upload key
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+        run: |
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          mkdir -p ../out
+          if [ -z "$UPLOAD_KEYSTORE_BASE64" ]; then
+            echo "::warning title=Unsigned for Play::Upload-key secrets are not set, so this bundle is signed with the debug key and Google Play will reject it."
+            cp "$AAB" ../out/zalumo-UNSIGNED-debug.aab
+            exit 0
+          fi
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 -d > /tmp/upload.jks
+          # Drop the debug signature added by the default release config, then sign with the upload key.
+          zip -q -d "$AAB" 'META-INF/*.SF' 'META-INF/*.RSA' 'META-INF/*.EC' 'META-INF/MANIFEST.MF' || true
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore /tmp/upload.jks \
+            -storepass "$UPLOAD_KEYSTORE_PASSWORD" "$AAB" "${UPLOAD_KEY_ALIAS:-upload}"
+          jarsigner -verify "$AAB" | tail -1
+          cp "$AAB" ../out/zalumo-release.aab
+          rm -f /tmp/upload.jks
 
       - uses: actions/upload-artifact@v4
         with:
-          name: zalumo-release-aab
-          path: android/android/app/build/outputs/bundle/release/app-release.aab
+          name: zalumo-android-bundle
+          path: out/*.aab
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
