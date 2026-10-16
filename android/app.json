@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "com.zalumo.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#B7FD00",
         "backgroundImage": "./assets/android-icon-background.png",
@@ -39,12 +39,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/splash-blank.png",
           "imageWidth": 160,
-          "backgroundColor": "#2A7C13",
+          "backgroundColor": "#BFFF00",
           "dark": {
-            "image": "./assets/splash-icon.png",
-            "backgroundColor": "#0E1509"
+            "image": "./assets/splash-blank.png",
+            "backgroundColor": "#BFFF00"
           }
         }
       ],

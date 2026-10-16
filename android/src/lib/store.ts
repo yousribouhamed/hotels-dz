@@ -21,6 +21,10 @@ type State = {
   hiddenReviews: string[];
   language: LanguageSetting;
   appearance: Appearance;
+  /** The welcome screens have been completed or skipped (people who used the app before them count too). */
+  onboarded: boolean;
+  /** Set for the restart that switches the layout to Arabic, so the opening animation doesn't play twice. */
+  skipSplash: boolean;
 
   setQuery: (q: string) => void;
   setRegion: (r: string | null) => void;
@@ -32,15 +36,19 @@ type State = {
   unhideAllReviews: () => void;
   setLanguage: (l: LanguageSetting) => void;
   setAppearance: (a: Appearance) => void;
+  /** Applies the welcome-screen choices to Explore and leaves the welcome screens for good. */
+  finishOnboarding: (region: string | null, kind: StayKind) => void;
   load: () => Promise<void>;
 };
 
 const KEY = 'stays.v1';
+/** Written just before the Arabic restart (see app/_layout.tsx). */
+export const SKIP_SPLASH_KEY = 'splash.skipOnce';
 
 export const useStore = create<State>((set, get) => {
   const persist = () => {
-    const { region, filters, sort, kind, saved, hiddenReviews, language, appearance } = get();
-    AsyncStorage.setItem(KEY, JSON.stringify({ region, filters, sort, kind, saved, hiddenReviews, language, appearance })).catch(() => {});
+    const { region, filters, sort, kind, saved, hiddenReviews, language, appearance, onboarded } = get();
+    AsyncStorage.setItem(KEY, JSON.stringify({ region, filters, sort, kind, saved, hiddenReviews, language, appearance, onboarded })).catch(() => {});
   };
   return {
     ready: false,
@@ -51,8 +59,11 @@ export const useStore = create<State>((set, get) => {
     kind: 'All',
     saved: [],
     hiddenReviews: [],
-    language: 'system',
+    // Arabic until the person picks another language in Settings (or on the welcome screen).
+    language: 'ar',
     appearance: 'system',
+    onboarded: false,
+    skipSplash: false,
 
     setQuery: (query) => set({ query }),
     setRegion: (region) => { set({ region }); persist(); },
@@ -71,10 +82,18 @@ export const useStore = create<State>((set, get) => {
     unhideAllReviews: () => { set({ hiddenReviews: [] }); persist(); },
     setLanguage: (language) => { set({ language }); persist(); },
     setAppearance: (appearance) => { set({ appearance }); persist(); },
+    finishOnboarding: (region, kind) => {
+      set({ region, kind, filters: { ...get().filters, towns: [] }, onboarded: true });
+      persist();
+    },
 
     load: async () => {
       try {
-        const raw = await AsyncStorage.getItem(KEY);
+        const [raw, skip] = await Promise.all([AsyncStorage.getItem(KEY), AsyncStorage.getItem(SKIP_SPLASH_KEY)]);
+        if (skip) {
+          set({ skipSplash: true });
+          AsyncStorage.removeItem(SKIP_SPLASH_KEY).catch(() => {});
+        }
         if (raw) {
           const s = JSON.parse(raw);
           const known = new Set(hotels.map((h) => h.id));
@@ -86,8 +105,10 @@ export const useStore = create<State>((set, get) => {
             // Stays removed from the data since they were saved are dropped, so the tab badge matches the list.
             saved: Array.isArray(s.saved) ? s.saved.filter((id: number) => known.has(id)) : [],
             hiddenReviews: Array.isArray(s.hiddenReviews) ? s.hiddenReviews : [],
-            language: s.language ?? 'system',
+            language: s.language ?? 'ar',
             appearance: s.appearance ?? 'system',
+            // Saved before the welcome screens existed: an existing user, straight to Explore.
+            onboarded: s.onboarded ?? true,
           });
         }
       } finally {

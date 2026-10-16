@@ -15,9 +15,11 @@
 		510E6F0BF6EE06EE76C3A888 /* thmanyahsans-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 561E7D741F432EE8755CC5C8 /* thmanyahsans-Medium.otf */; };
 		53CBDF2E2566E03A1CE3B726 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7914A2DED8F47CB4AD771C83 /* ExploreView.swift */; };
 		5460346B4952660FCFBBE8D5 /* Community.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC03DCE0D766231AB61F506 /* Community.swift */; };
+		65CD68465E337D827CE9E95C /* Splash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4471F24B8BE58C43F22D78F7 /* Splash.swift */; };
 		6778154615FEE66DDBEE8A0C /* thmanyahsans-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8A6781E478CB4A1BF92026E1 /* thmanyahsans-Light.otf */; };
 		6E0AA97C0EF323DE34A732FB /* FilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4603B23AD37E15FE436F5BE1 /* FilterSheet.swift */; };
 		78E020D38172AB976C36625D /* Moderation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6A6C672EB4807B880A69F7 /* Moderation.swift */; };
+		898595C9BC31DFCC30F7F05C /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAE0A1938E31C71A70D1870 /* Brand.swift */; };
 		8EDECE75EAF6BCD864CDBF15 /* thmanyahsans-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6E8A9AA22CDE697954DE76EF /* thmanyahsans-Black.otf */; };
 		900A454D63E0F00FD757F4D0 /* BoumerdesStaysApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813772C9F50D0F81EE197A30 /* BoumerdesStaysApp.swift */; };
 		9E4211C16494165B4DA2775C /* thmanyahsans-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 67C2C271592E859AF98CEDCD /* thmanyahsans-Regular.otf */; };
@@ -27,6 +29,7 @@
 		C374F7AABDB0D9C97CDD8859 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3393650BBCF04DE5AC136EE6 /* Models.swift */; };
 		C582878A7999D5D24062F317 /* ImagePipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C3EE86218E2F6883CB117 /* ImagePipeline.swift */; };
 		C6BB55E0C495C2D37746A33D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AD2EB8D6D3A48AC54415E84 /* Settings.swift */; };
+		CA2E35AE5DDCCCF23AC6C96E /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D7F9240800F7AA1A1C0E17 /* Onboarding.swift */; };
 		CDC032158E5C7847E88C5628 /* HotelDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3B522929B97C119965F99D /* HotelDetailView.swift */; };
 		D1676EED7EA3132A6C20B305 /* thmanyahsans-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5B8EA8E3A79699DC4A87648 /* thmanyahsans-Bold.otf */; };
 		DDCC2638F20AC0E93390C5F2 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EB41F9D986D5053F4BE3C8 /* Typography.swift */; };
@@ -46,6 +49,7 @@
 		3AC03DCE0D766231AB61F506 /* Community.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Community.swift; sourceTree = "<group>"; };
 		40C705091573D8697C9BF6AB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		424623EDC2E5B53D4E674348 /* CollectedReviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectedReviews.swift; sourceTree = "<group>"; };
+		4471F24B8BE58C43F22D78F7 /* Splash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Splash.swift; sourceTree = "<group>"; };
 		4603B23AD37E15FE436F5BE1 /* FilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSheet.swift; sourceTree = "<group>"; };
 		555C3EE86218E2F6883CB117 /* ImagePipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePipeline.swift; sourceTree = "<group>"; };
 		561E7D741F432EE8755CC5C8 /* thmanyahsans-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Medium.otf"; sourceTree = "<group>"; };
@@ -62,11 +66,13 @@
 		8ED7624BB935B86A2C41CDBA /* ReviewViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViews.swift; sourceTree = "<group>"; };
 		A474F5D17CB7BA77A13513D1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
 		ADD5607C988B91779956A82D /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		D9D7F9240800F7AA1A1C0E17 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		E71BAF9E89703935FEA56194 /* BoumerdesStays.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoumerdesStays.entitlements; sourceTree = "<group>"; };
 		EE5FDD8A3B4FB728A26F6E33 /* hotels.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hotels.json; sourceTree = "<group>"; };
 		F37DD903FE9E48A99DA4EC62 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = BoumerdesStays/Resources/img; sourceTree = SOURCE_ROOT; };
 		F5B8EA8E3A79699DC4A87648 /* thmanyahsans-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "thmanyahsans-Bold.otf"; sourceTree = "<group>"; };
 		F80452BE5461F3F51A102954 /* reviews */ = {isa = PBXFileReference; lastKnownFileType = folder; name = reviews; path = BoumerdesStays/Resources/reviews; sourceTree = SOURCE_ROOT; };
+		FAAE0A1938E31C71A70D1870 /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +93,7 @@
 				5E8EA04FD9E4A65F0BE6D81D /* Assets.xcassets */,
 				E71BAF9E89703935FEA56194 /* BoumerdesStays.entitlements */,
 				813772C9F50D0F81EE197A30 /* BoumerdesStaysApp.swift */,
+				FAAE0A1938E31C71A70D1870 /* Brand.swift */,
 				424623EDC2E5B53D4E674348 /* CollectedReviews.swift */,
 				3AC03DCE0D766231AB61F506 /* Community.swift */,
 				ADD5607C988B91779956A82D /* Components.swift */,
@@ -99,8 +106,10 @@
 				0B560BB95C0AF1EF7D992AB9 /* MapScreen.swift */,
 				3393650BBCF04DE5AC136EE6 /* Models.swift */,
 				6B6A6C672EB4807B880A69F7 /* Moderation.swift */,
+				D9D7F9240800F7AA1A1C0E17 /* Onboarding.swift */,
 				8ED7624BB935B86A2C41CDBA /* ReviewViews.swift */,
 				8AD2EB8D6D3A48AC54415E84 /* Settings.swift */,
+				4471F24B8BE58C43F22D78F7 /* Splash.swift */,
 				21EB41F9D986D5053F4BE3C8 /* Typography.swift */,
 				61268427EB08A597C467986F /* Resources */,
 			);
@@ -231,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				900A454D63E0F00FD757F4D0 /* BoumerdesStaysApp.swift in Sources */,
+				898595C9BC31DFCC30F7F05C /* Brand.swift in Sources */,
 				EF24FF0BC652C87DB8B8AD15 /* CollectedReviews.swift in Sources */,
 				5460346B4952660FCFBBE8D5 /* Community.swift in Sources */,
 				EB1018A7EAA15AD3135ADBE3 /* Components.swift in Sources */,
@@ -243,8 +253,10 @@
 				4E42347EC3091C5394F1374C /* MapScreen.swift in Sources */,
 				C374F7AABDB0D9C97CDD8859 /* Models.swift in Sources */,
 				78E020D38172AB976C36625D /* Moderation.swift in Sources */,
+				CA2E35AE5DDCCCF23AC6C96E /* Onboarding.swift in Sources */,
 				FA76E326FE97B8BEAF2C7246 /* ReviewViews.swift in Sources */,
 				C6BB55E0C495C2D37746A33D /* Settings.swift in Sources */,
+				65CD68465E337D827CE9E95C /* Splash.swift in Sources */,
 				DDCC2638F20AC0E93390C5F2 /* Typography.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,10 +288,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BoumerdesStays/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zalumo;
 				INFOPLIST_KEY_LSApplicationQueriesSchemes = tel;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -361,10 +373,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BoumerdesStays/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zalumo;
 				INFOPLIST_KEY_LSApplicationQueriesSchemes = tel;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

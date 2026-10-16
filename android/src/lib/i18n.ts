@@ -36,7 +36,7 @@ export function resolveLanguage(setting: LanguageSetting): Lang {
     const code = (l.languageCode ?? '').toLowerCase();
     if (code === 'en' || code === 'fr' || code === 'ar') return code;
   }
-  return 'en';
+  return 'ar';
 }
 
 /** Algerian regional formats; Arabic in Algeria writes Latin digits. */

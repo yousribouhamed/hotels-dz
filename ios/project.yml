@@ -19,6 +19,7 @@ targets:
     sources:
       - path: BoumerdesStays
         excludes:
+          - "Info.plist"
           - "Resources/img"
           - "Resources/img/**"
           - "Resources/reviews"
@@ -43,7 +44,8 @@ targets:
         PRODUCT_NAME: BoumerdesStays
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: "Zalumo"
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        # Launch screen: see BoumerdesStays/Info.plist (merged with the generated keys).
+        INFOPLIST_FILE: BoumerdesStays/Info.plist
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_LSApplicationQueriesSchemes: "tel"

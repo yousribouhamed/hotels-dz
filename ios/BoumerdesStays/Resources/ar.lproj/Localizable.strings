@@ -95,6 +95,19 @@
 "Lowest" = "الأرخص";
 "Online rate" = "سومة الأنترنت";
 "Lowest online rate" = "أرخص سومة على الأنترنت";
+"Single" = "سينغل";
+"Double" = "دوبل";
+"Twin" = "توين";
+"Triple" = "تريبل";
+"Family room" = "بيت عائلية";
+"Suite" = "سويت";
+"Apartment" = "شقة";
+"1 bed" = "فراش واحد";
+"1 large bed" = "فراش كبير";
+"2 separate beds" = "زوج فراشات مفرّقين";
+"3 beds" = "تلاتة فراشات";
+"Prices from the hotel · %@" = "سومة الأوتيل · %@";
+"The hotel’s own price" = "سومة الأوتيل";
 "No online price" = "ما كاش سومة على الأنترنت";
 "Call for today’s rate" = "عيّط تعرف سومة اليوم";
 "Ask at the front desk" = "اسقسي في الريسيبسيون";
@@ -430,3 +443,10 @@
 "Ziama Mansouriah" = "زيامة منصورية";
 "Back" = "رجوع";
 "Close menu" = "سكّر القائمة";
+
+/* Opening and welcome screens */
+"Find your stay, then call to book." = "لقى البلاصة اللي تعجبك، وعيّط باش تحجز.";
+"Free, and no account needed." = "باطل، وبلا ما تسجّل.";
+"%d wilayas" = "%d ولاية";
+"Let’s go" = "يلا نبداو";
+"%@ from %@" = "%1$@ من %2$@";

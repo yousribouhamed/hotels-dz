@@ -25,7 +25,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
             let base = String(code.prefix(2))
             if ["en", "fr", "ar"].contains(base) { return base }
         }
-        return "en"
+        return "ar"
     }
 
     /// Algerian regional formats; Arabic in Algeria writes Latin digits.
@@ -80,7 +80,8 @@ final class AppSettings {
     }
 
     init() {
-        language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: "language") ?? "") ?? .system
+        // Arabic until the person picks another language in Settings.
+        language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: "language") ?? "") ?? .ar
         appearance = Appearance(rawValue: UserDefaults.standard.string(forKey: "appearance") ?? "") ?? .system
         Typography.registerFonts()
         Bundle.useLanguage(language.resolved)
