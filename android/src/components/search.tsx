@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { MenuView } from '@react-native-menu/menu';
 import { L, LF } from '../lib/i18n';
 import { StaySort, hotels, staySorts } from '../lib/model';
 import { regions, sortedRegionNames, useStore } from '../lib/store';
 import { emptyFilters } from '../lib/filters';
 import { useTheme } from '../lib/theme';
 import { BottomSheet } from './sheet';
+import { Menu } from './menu';
 import { Icon, T, font } from './ui';
 
 const ALL = '__all__';
@@ -166,26 +166,29 @@ export function SearchWithWilaya() {
   );
 }
 
-/** "↑↓ Best match ⌄" chip that opens the sort menu. */
-/** Sort picker, shown on the right of the result count. */
+/** Sort picker: a compact "↑↓ Best match ⌄" chip on the right of the result count. */
 export function SortMenu() {
-  const { c, isDark } = useTheme();
+  const { c } = useTheme();
   const sort = useStore((s) => s.sort);
   const setSort = useStore((s) => s.setSort);
   return (
-    <MenuView
+    <Menu
       title={L('Sort by')}
-      themeVariant={isDark ? 'dark' : 'light'}
-      actions={staySorts.map((s) => ({ id: s, title: L(s), state: s === sort ? ('on' as const) : ('off' as const) }))}
-      onPressAction={({ nativeEvent }) => setSort(nativeEvent.event as StaySort)}
+      width={240}
+      items={staySorts.map((s) => ({ id: s, title: L(s), selected: s === sort }))}
+      onSelect={(id) => setSort(id as StaySort)}
     >
-      {/* Compact chip so it sits beside the count without crowding it. */}
-      <View style={[styles.sort, { backgroundColor: c.surface, borderColor: c.line + '99' }]}>
-        <Icon name="swap-vertical" size={13} />
-        <T v="footnote" w="semibold" numberOfLines={1}>{L(sort)}</T>
-        <Icon name="chevron-down" size={13} />
-      </View>
-    </MenuView>
+      {(open) => (
+        <Pressable onPress={open} accessibilityRole="button" accessibilityLabel={LF('%@, %@', L('Sort by'), L(sort))}>
+          {/* Compact chip so it sits beside the count without crowding it. */}
+          <View style={[styles.sort, { backgroundColor: c.surface, borderColor: c.line + '99' }]}>
+            <Icon name="swap-vertical" size={13} />
+            <T v="footnote" w="semibold" numberOfLines={1}>{L(sort)}</T>
+            <Icon name="chevron-down" size={13} />
+          </View>
+        </Pressable>
+      )}
+    </Menu>
   );
 }
 
