@@ -27,7 +27,11 @@ final class HotelStore {
         hotels = list
         byId = Dictionary(uniqueKeysWithValues: list.map { ($0.id, $0) })
         traitsById = Dictionary(uniqueKeysWithValues: list.map { ($0.id, StayTraits($0)) })
-        saved = Set(UserDefaults.standard.array(forKey: "savedStays") as? [Int] ?? [])
+        // Stays removed from the data since they were saved are dropped, so the tab badge matches the list.
+        let stored = Set(UserDefaults.standard.array(forKey: "savedStays") as? [Int] ?? [])
+        let kept = stored.intersection(list.map(\.id))
+        saved = kept
+        if kept != stored { UserDefaults.standard.set(Array(kept), forKey: "savedStays") }
         region = UserDefaults.standard.string(forKey: "region")
         sort = StaySort(rawValue: UserDefaults.standard.string(forKey: "sort") ?? "") ?? .best
         kind = StayKind(rawValue: UserDefaults.standard.string(forKey: "kind") ?? "") ?? .all

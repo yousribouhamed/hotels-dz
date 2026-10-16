@@ -77,12 +77,14 @@ export const useStore = create<State>((set, get) => {
         const raw = await AsyncStorage.getItem(KEY);
         if (raw) {
           const s = JSON.parse(raw);
+          const known = new Set(hotels.map((h) => h.id));
           set({
             region: s.region ?? null,
             filters: { ...emptyFilters(), ...(s.filters ?? {}) },
             sort: s.sort ?? 'Best match',
             kind: s.kind ?? 'All',
-            saved: Array.isArray(s.saved) ? s.saved : [],
+            // Stays removed from the data since they were saved are dropped, so the tab badge matches the list.
+            saved: Array.isArray(s.saved) ? s.saved.filter((id: number) => known.has(id)) : [],
             hiddenReviews: Array.isArray(s.hiddenReviews) ? s.hiddenReviews : [],
             language: s.language ?? 'system',
             appearance: s.appearance ?? 'system',
