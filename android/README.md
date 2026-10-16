@@ -33,6 +33,15 @@ npx eas-cli@latest build -p android --profile production   # .aab for Play
 npx eas-cli@latest submit -p android --profile production  # uploads to the Play "internal" track
 ```
 
+Or build the signed `.aab` on this Mac and upload it by hand in Play Console:
+
+```sh
+sh scripts/build-play-bundle.sh   # → Zalumo-<version>-<versionCode>.aab
+```
+
+It signs with the upload key in `~/Developer/zalumo-signing` (kept out of the repo; back it up).
+Bump `android.versionCode` in `app.json` before each new upload.
+
 Before the first release, run `npx eas-cli@latest update:configure` so the app can apply
 the Arabic right-to-left switch (and receive small fixes) without a store update.
 
