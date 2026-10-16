@@ -39,7 +39,7 @@ struct HotelDetailView: View {
                                 .font(.app(.subheadline, .semibold))
                                 .foregroundStyle(Color.heart)
                         }
-                        if !hotel.rateRows.isEmpty { section("Prices") { prices } }
+                        if !hotel.rateRows.isEmpty || hotel.rates != nil { section("Prices") { prices } }
                         if !hotel.desc.isEmpty { section("About this place") { about } }
                         if hotel.am.contains(where: \.y) { section("What this place offers") { amenities } }
                         if hotel.rating != nil || hotel.siteRating != nil || community.isAvailable {
@@ -279,11 +279,28 @@ struct HotelDetailView: View {
     }
 
     private var prices: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+            // Room prices the stay gave us by phone come first, then the rates listed online.
+            if let rates = hotel.rates {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label {
+                        Text(LF("Prices from the hotel · %@", Fmt.day(rates.asked) ?? rates.asked))
+                    } icon: {
+                        Image(systemName: "phone.fill").foregroundStyle(Color.accentColor)
+                    }
+                    .font(.app(.footnote))
+                    .foregroundStyle(.secondary)
+                    // One compact tile per room, in the colours of the amenity tiles.
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
+                        ForEach(rates.rooms, id: \.self) { room in roomTile(room) }
+                    }
+                }
+                .padding(.bottom, hotel.rateRows.isEmpty ? 0 : 8)
+            }
             ForEach(Array(hotel.rateRows.enumerated()), id: \.offset) { i, row in
                 HStack(alignment: .firstTextBaseline) {
                     Text(L(row.site)).lineLimit(1)
-                    if i == 0 {
+                    if i == 0 && !hotel.lowestIsFromStay {
                         Text("Lowest")
                             .font(.app(.caption2, .bold))
                             .foregroundStyle(Color.good)
@@ -297,6 +314,35 @@ struct HotelDetailView: View {
                 if i < hotel.rateRows.count - 1 { Divider().overlay(Color.line) }
             }
         }
+    }
+
+    private func roomTile(_ room: Hotel.Rates.Room) -> some View {
+        let kind = Hotel.roomKinds[room.kind]
+        let title = L(kind?.title ?? room.kind.capitalized)
+        // Compact: icon beside the name and price. The bed setup is in the name (Single, Double, Twin…),
+        // so it is only read out by VoiceOver.
+        return HStack(spacing: 10) {
+            Image(systemName: kind?.symbol ?? "bed.double")
+                .font(.app(.body))
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(.app(.subheadline, .semibold)).lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 3) {
+                    Text(Money.dzd(room.dzd)).font(.app(.headline)).monospacedDigit()
+                    Text("/ night").font(.app(.caption)).foregroundStyle(.secondary)
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel([title, kind?.beds.map { L($0) }, Money.dzd(room.dzd) + " " + L("/ night")]
+            .compactMap { $0 }.joined(separator: ", "))
     }
 
     private var about: some View {
@@ -695,7 +741,7 @@ struct HotelDetailView: View {
                         Text(Money.dzd(dzd)).font(.app(.headline)).monospacedDigit().fixedSize()
                         Text("/ night").font(.app(.subheadline)).foregroundStyle(.secondary).fixedSize()
                     }
-                    Text("Lowest online rate").font(.app(.caption)).foregroundStyle(.secondary)
+                    Text(hotel.lowestIsFromStay ? L("The hotel’s own price") : L("Lowest online rate")).font(.app(.caption)).foregroundStyle(.secondary)
                         .lineLimit(1).minimumScaleFactor(0.8)
                 } else {
                     Text("Price on request").font(.app(.headline))

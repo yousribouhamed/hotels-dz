@@ -25,6 +25,16 @@ struct Hotel: Identifiable, Codable, Hashable {
         let dzd: Int?
         let checked: String
     }
+    /// Room prices the stay gave us itself (by phone), entered by hand; `asked` is the day we asked (yyyy-MM-dd).
+    struct Rates: Codable, Hashable {
+        /// `kind` is single, double, twin, triple, family, suite or apartment.
+        struct Room: Codable, Hashable {
+            let kind: String
+            let dzd: Int
+        }
+        let asked: String
+        let rooms: [Room]
+    }
     struct Distribution: Codable, Hashable {
         let oneStar: Int?
         let twoStar: Int?
@@ -48,6 +58,8 @@ struct Hotel: Identifiable, Codable, Hashable {
     /// Nightly rate in dinars, as Google listed it (no exchange rate applied in the app).
     let dzd: Int?
     let ads: [Ad]
+    /// Prices from the stay itself; only stays we called have them.
+    let rates: Rates?
     let web: String
     let email: String
     let maps: String?
@@ -71,9 +83,26 @@ extension Hotel {
         return CLLocationCoordinate2D(latitude: lat, longitude: lng)
     }
 
-    /// Lowest nightly rate listed online, in dinars.
+    /// Lowest nightly rate in dinars, online or from the stay itself.
     var lowestDZD: Int? {
-        ([dzd] + ads.map(\.dzd)).compactMap { $0 }.filter { $0 > 0 }.min()
+        ([dzd] + ads.map(\.dzd) + (rates?.rooms.map(\.dzd) ?? [])).compactMap { $0 }.filter { $0 > 0 }.min()
+    }
+
+    /// Room names, bed setup and symbol for each kind of room in `rates`.
+    static let roomKinds: [String: (title: String, beds: String?, symbol: String)] = [
+        "single": ("Single", "1 bed", "person"),
+        "double": ("Double", "1 large bed", "person.2"),
+        "twin": ("Twin", "2 separate beds", "person.2"),
+        "triple": ("Triple", "3 beds", "person.3"),
+        "family": ("Family room", nil, "figure.2.and.child.holdinghands"),
+        "suite": ("Suite", nil, "sofa"),
+        "apartment": ("Apartment", nil, "building.2"),
+    ]
+
+    /// True when the lowest rate is one the stay gave us, not one listed online.
+    var lowestIsFromStay: Bool {
+        guard let low = lowestDZD, let fromStay = rates?.rooms.map(\.dzd).min() else { return false }
+        return fromStay == low
     }
 
     /// Every rate listed online, cheapest first.

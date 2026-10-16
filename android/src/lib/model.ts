@@ -2,6 +2,19 @@ import raw from '../../assets/data/hotels.json';
 import { L, LF, formatDecimal } from './i18n';
 
 export type Ad = { site?: string | null; dzd?: number | null };
+/** Room prices the stay gave us itself (by phone), entered by hand; `asked` is the day we asked (yyyy-MM-dd). */
+export type Rates = { asked: string; rooms: { kind: string; dzd: number }[] };
+
+/** Room names, bed setup and icon for each `kind` in `rates` (same table as the iOS app). */
+export const roomKinds: Record<string, { title: string; beds?: string; icon: string }> = {
+  single: { title: 'Single', beds: '1 bed', icon: 'account-outline' },
+  double: { title: 'Double', beds: '1 large bed', icon: 'account-multiple-outline' },
+  twin: { title: 'Twin', beds: '2 separate beds', icon: 'account-multiple-outline' },
+  triple: { title: 'Triple', beds: '3 beds', icon: 'account-group-outline' },
+  family: { title: 'Family room', icon: 'human-male-female-child' },
+  suite: { title: 'Suite', icon: 'sofa-outline' },
+  apartment: { title: 'Apartment', icon: 'office-building-outline' },
+};
 export type Amenity = { n: string; y: boolean };
 export type Review = { s?: number | null; t: string; d: string };
 export type Distribution = {
@@ -28,6 +41,8 @@ export type Hotel = {
   /** Nightly rate in dinars, as listed online (the app never converts currencies). */
   dzd?: number | null;
   ads: Ad[];
+  /** Prices from the stay itself; only stays we called have them. */
+  rates?: Rates | null;
   web: string;
   email: string;
   maps?: string | null;
@@ -51,10 +66,17 @@ export const hotelById = new Map(hotels.map((h) => [h.id, h]));
 
 export const regionName = (h: Hotel) => h.region ?? 'Boumerdès';
 
-/** Lowest nightly rate listed online, in dinars. */
+/** Lowest nightly rate in dinars, online or from the stay itself. */
 export function lowestDZD(h: Hotel): number | null {
-  const all = [h.dzd, ...h.ads.map((a) => a.dzd)].filter((p): p is number => typeof p === 'number' && p > 0);
+  const all = [h.dzd, ...h.ads.map((a) => a.dzd), ...(h.rates?.rooms.map((r) => r.dzd) ?? [])]
+    .filter((p): p is number => typeof p === 'number' && p > 0);
   return all.length ? Math.min(...all) : null;
+}
+
+/** True when the lowest rate is one the stay gave us, not one listed online. */
+export function lowestIsFromStay(h: Hotel): boolean {
+  const low = lowestDZD(h);
+  return low != null && !!h.rates?.rooms.length && Math.min(...h.rates.rooms.map((r) => r.dzd)) === low;
 }
 
 /** Every rate listed, cheapest first. */

@@ -8,7 +8,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Camera, Map, Marker } from '@maplibre/maplibre-react-native';
 import { L, LF, formatDay, formatDecimal, formatDistance } from '../../lib/i18n';
 import {
-  Hotel, Money, Review, googleMapsURL, hotelById, isGuestFavourite, lowestDZD, mapsAppURL, ratingLabel, rateRows, regionName,
+  Hotel, Money, Review, googleMapsURL, hotelById, isGuestFavourite, lowestDZD, lowestIsFromStay, mapsAppURL, ratingLabel, rateRows, regionName, roomKinds,
   reviewCountText, siteRating, siteReviewsText, siteScoreText, starsText, telURL, websiteLabel, websiteURL,
 } from '../../lib/model';
 import { traits } from '../../lib/filters';
@@ -108,14 +108,48 @@ function Detail({ hotel }: { hotel: Hotel }) {
             </View>
           ) : null}
 
-          {rows.length > 0 ? (
+          {rows.length > 0 || hotel.rates ? (
             <Section title="Prices">
               <View>
+                {/* Room prices the stay gave us by phone come first, then the rates listed online. */}
+                {hotel.rates ? (
+                  <View style={{ gap: 10, paddingBottom: rows.length ? 8 : 0 }}>
+                    <View style={styles.row6}>
+                      <Icon name="phone" size={15} color={c.accent} />
+                      <T v="footnote" secondary>{LF('Prices from the hotel · %@', formatDay(hotel.rates.asked) ?? hotel.rates.asked)}</T>
+                    </View>
+                    {/* One compact tile per room, in the colours of the amenity tiles. The bed setup is in the name
+                        (Single, Double, Twin…), so it is only read out by screen readers. */}
+                    <View style={styles.amenityGrid}>
+                      {hotel.rates.rooms.map((room, i) => {
+                        const kind = roomKinds[room.kind];
+                        const title = L(kind?.title ?? room.kind);
+                        return (
+                          <View
+                            key={i}
+                            style={[styles.roomTile, { backgroundColor: c.surface }]}
+                            accessible
+                            accessibilityLabel={[title, kind?.beds ? L(kind.beds) : null, `${Money.dzd(room.dzd)} ${L('/ night')}`].filter(Boolean).join(', ')}
+                          >
+                            <Icon name={(kind?.icon ?? 'bed-outline') as IconName} size={20} color={c.accent} />
+                            <View style={{ flex: 1, gap: 1 }}>
+                              <T v="subheadline" w="semibold" numberOfLines={1}>{title}</T>
+                              <View style={[styles.row6, { alignItems: 'baseline', gap: 3 }]}>
+                                <T v="headline" numberOfLines={1}>{Money.dzd(room.dzd)}</T>
+                                <T v="caption" secondary numberOfLines={1}>{L('/ night')}</T>
+                              </View>
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ) : null}
                 {rows.map((row, i) => (
                   <View key={i}>
                     <View style={styles.priceRow}>
                       <T numberOfLines={1} style={{ flexShrink: 1 }}>{L(row.site)}</T>
-                      {i === 0 ? (
+                      {i === 0 && !lowestIsFromStay(hotel) ? (
                         <View style={[styles.lowest, { backgroundColor: c.brandSoft }]}>
                           <T v="caption2" w="bold" color={c.good}>{L('Lowest')}</T>
                         </View>
@@ -235,7 +269,7 @@ function Detail({ hotel }: { hotel: Hotel }) {
                 <T v="headline">{Money.dzd(dzd)}</T>
                 <T v="subheadline" secondary>{L('/ night')}</T>
               </View>
-              <T v="caption" secondary>{L('Lowest online rate')}</T>
+              <T v="caption" secondary>{lowestIsFromStay(hotel) ? L('The hotel’s own price') : L('Lowest online rate')}</T>
             </>
           ) : (
             <>
@@ -715,6 +749,7 @@ const styles = StyleSheet.create({
   lowest: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
   amenityGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   amenityTile: { width: '31.5%', minHeight: 92, borderRadius: 14, padding: 10, gap: 8 },
+  roomTile: { width: '48.5%', flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10 },
   showAll: { height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 24, marginTop: 4 },
   barTrack: { flex: 1, height: 4, borderRadius: 2, overflow: 'hidden' },
   tag: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14 },
