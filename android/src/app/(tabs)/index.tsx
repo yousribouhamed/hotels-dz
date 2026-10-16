@@ -50,25 +50,41 @@ export default function ExploreScreen() {
 
   const header = (
     <View style={{ gap: 14 }}>
-      <View style={{ paddingHorizontal: 16, marginTop: 4 }}>
+      {/* Logo and filter button on one line, scrolling with the list (as on iOS). */}
+      <View style={styles.titleRow}>
         <Wordmark />
+        <Pressable
+          onPress={() => router.push('/filters')}
+          style={[
+            styles.roundButton,
+            active > 0 ? { backgroundColor: c.accent, borderColor: 'transparent' } : { backgroundColor: c.surface, borderColor: c.line + '99' },
+          ]}
+          accessibilityLabel={active > 0 ? LF('Filters, %lld on', active) : L('Filters')}
+        >
+          <Icon name="filter-variant" size={22} color={active > 0 ? c.onAccent : c.text} />
+          {active > 0 ? (
+            <View style={[styles.badge, { backgroundColor: c.heart }]}>
+              <T v="caption2" w="bold" color="#FFFFFF">{active}</T>
+            </View>
+          ) : null}
+        </Pressable>
       </View>
-      <View style={{ paddingHorizontal: 16 }}>
+      <View style={{ paddingHorizontal: 16, marginTop: 4 }}>
         <SearchWithWilaya />
       </View>
       {query.trim() ? <Suggestions /> : null}
-      {!isBrowsing ? (
-        <View style={{ paddingHorizontal: 16, flexDirection: 'row' }}>
-          <SortMenu />
-        </View>
-      ) : null}
       {!isBrowsing && chips(filters).length > 0 ? <ActiveFilters /> : null}
       {!isBrowsing ? (
         <View style={styles.resultHeader}>
-          <T v="subheadline" w="semibold">
-            {results.length === scope.length ? LF('%d stays', results.length) : LF('%d of %d stays', results.length, scope.length)}
+          {/* Count and wilaya stay on one line; the wilaya part shrinks first if space runs out. */}
+          <T v="subheadline" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <T v="subheadline" w="semibold">
+              {results.length === scope.length ? LF('%d stays', results.length) : LF('%d of %d stays', results.length, scope.length)}
+            </T>
+            {' '}
+            <T v="subheadline" secondary>{region ? LF('in %@', L(region)) : L('in all wilayas')}</T>
           </T>
-          <T v="subheadline" secondary>{region ? LF('in %@', L(region)) : L('in all wilayas')}</T>
+          <SortMenu />
         </View>
       ) : null}
       {!isBrowsing ? (
@@ -88,17 +104,6 @@ export default function ExploreScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.canvas, paddingTop: insets.top }}>
-      {/* Top bar with the filter button, like the iOS navigation bar. */}
-      <View style={styles.topBar}>
-        <Pressable
-          onPress={() => router.push('/filters')}
-          style={[styles.roundButton, { backgroundColor: c.surface, borderColor: c.line }]}
-          accessibilityLabel={active > 0 ? LF('Filters, %lld on', active) : L('Filters')}
-        >
-          <Icon name={active > 0 ? 'filter-variant-plus' : 'filter-variant'} size={22} color={active > 0 ? c.accent : c.text} />
-        </Pressable>
-      </View>
-
       {isBrowsing ? (
         <FlatList
           data={rows}
@@ -237,9 +242,10 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: { height: 52, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 16 },
-  roundButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
-  resultHeader: { flexDirection: 'row', alignItems: 'baseline', gap: 8, paddingHorizontal: 16 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 8 },
+  roundButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  badge: { position: 'absolute', top: -4, end: -4, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center' },
+  resultHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingHorizontal: 16 },
   suggestion: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 34, borderRadius: 17 },
   activeChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11, height: 30, borderRadius: 15 },
   empty: { alignItems: 'center', gap: 10, paddingTop: 30, paddingHorizontal: 32 },
